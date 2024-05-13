@@ -37,7 +37,6 @@ width   = fread(fid, 1, 'int32');
 height  = fread(fid, 1, 'int32');
 
 % sanity check
-
 if (tag ~= TAG_FLOAT)
     error('readFlowFile(%s): wrong tag (possibly due to big-endian machine?)', filename);
 end

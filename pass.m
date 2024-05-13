@@ -1,14 +1,18 @@
 function pass(Storage,window_size,overlap,varargin)
-%pass Рассчет векторного поля...
-%   Выполняет...
+%pass Рассчет векторного поля кросскорреляционным методом
+%   Выполняет кросскорреляцию локальных областей (окн опроса) на паре
+%   изображений. В зависимости от заданных параметров может работать, как
+%   проход для получения первичного векторного поля, так и проход для
+%   уточнения существующего векторного поля.
 
-% Определиние стандартных параметров
-type_pass = 'first';
-double_corr = false;
-restriction = false;
-deform = false;
-borders = true;
+% Определиние параметров по умолчанию
+type_pass = 'first'; % тип прохода 'first' или 'next'
+double_corr = false; % перемножение соседних корреляционных карт
+restriction = false; % ограничение поиска корреляционного пика
+deform = false;      % деформация изображений
+borders = true;      % обработка границ изображений
 
+% Парсер заданных параметов
 k = 2;
 while k <= size(varargin,2)
     switch varargin{k-1}
@@ -34,22 +38,22 @@ while k <= size(varargin,2)
     k = k + 2;
 end
 
-% Проверка на изменение заданного размера и наложения окона опроса
+% Проверка на изменение размера и величины наложения окон опроса
 if ~strcmp(type_pass,'first') && (~isequal(Storage.window_size,window_size) || ~isequal(Storage.overlap,overlap))
     multigrid = true;
 else
     multigrid = false;
 end
 
-% Запись новых размеров
+% Запись новых размеров и величины наложения окон опроса
 Storage.window_size = window_size;
 Storage.overlap = overlap;
 
-% Блок деформации изображения
+% Деформации изображения
 if deform
-    Storage.vectors_map_last_pass = imresize(Storage.vectors_map_last_pass,size(Storage.image_1),'bilinear');
+    Storage.vectors_map_last_pass = imresize(Storage.vectors_map_last_pass,size(Storage.image_1),'nearest');
     switch deform_type
-        case 'central'
+        case 'symmetric'
             Storage.image_1 = imwarp(Storage.image_1,-Storage.vectors_map_last_pass/2);
             Storage.image_2 = imwarp(Storage.image_2,Storage.vectors_map_last_pass/2);
         case 'second'
@@ -88,17 +92,17 @@ end
 Storage.outliers_map = zeros(size_map);
 Storage.replaces_map = zeros(size_map);
 
+% Инициализаци новых корреляционных карт
 Storage.correlation_maps = cell(size_map);
+
 % Расчёт корреляционных карт
-if strcmp(type_pass,'first') || (deform)
-    % В случае отсутвия смещения окон опроса для второго изображения
+if strcmp(type_pass,'first') || (deform) % В случае отсутвия смещения окон опроса для второго изображения
     for i = 1:size_map(1)
         for j = 1:size_map(2)
             cross_correlate(Storage,i,j,X0,Y0,double_corr);
         end
     end
-else
-    % Центр без границ
+else % Центр без границ
     for i = 2:size_map(1)-1
         for j = 2:size_map(2)-1
             cross_correlate(Storage,i,j,X0,Y0,double_corr,'offset','validate_borders');
@@ -114,7 +118,7 @@ else
     for j = 1:size_map(2), cross_correlate(Storage,size_map(1),j,X0,Y0,double_corr,'offset','validate_borders'); end
 end
 
-% Различные методы перемножения соседних карт корреляции
+% Методы перемножения соседних карт корреляции
 if double_corr
     switch direct
         case 'x', direct_x(Storage); % Перемножение с правой корреляционной картой
@@ -125,10 +129,12 @@ if double_corr
     end
 end
 
-% Поиск максимума коррляционного пика
+% Инициализация нового векторного поля последнего прохода
 if strcmp(type_pass,'first') || (deform)
-    Storage.vectors_map_last_pass = zeros(size(Storage.centers_map));
+    Storage.vectors_map_last_pass = zeros([size_map,2]);
 end
+
+% Поиск максимума коррляционного пика
 if restriction % С ограничением
     x_start = window_size(2) - round(restriction_area*window_size(2));
     x_end = window_size(2) + round(restriction_area*window_size(2));
@@ -160,13 +166,17 @@ end
 end
 
 function cross_correlate(Storage,i,j,X0,Y0,double_corr,varargin)
+%cross_correlate Кросскорреляция окн опроса
+%   Для кросскорреляции используется встроенная функция normxcorr2
 
+% Опредление параметров по умолчанию
 validate_borders = false;
 x_start = X0(i,j);
 x_end = X0(i,j) + Storage.window_size(2)-1;
 y_start = Y0(i,j);
 y_end = Y0(i,j) + Storage.window_size(1)-1;
 
+% Парсер заданных параметов
 k = 1;
 while k <= size(varargin,2)
     switch varargin{k}
@@ -182,6 +192,7 @@ while k <= size(varargin,2)
 end
 
 if validate_borders, [x_start,x_end,y_start,y_end] = validate(Storage,x_start,x_end,y_start,y_end); end
+
 %*******************************
 % Отладочная информация (Удалить)
 Storage.temp_X0_2(i,j) = x_start;
@@ -189,9 +200,9 @@ Storage.temp_Y0_2(i,j) = y_start;
 Storage.temp_Xe_2(i,j) = x_end;
 Storage.temp_Ye_2(i,j) = x_end;
 %*******************************
+
 sliding_windows_2 = Storage.image_2(y_start:y_end,x_start:x_end);
 sliding_windows_1 = Storage.image_1(Y0(i,j):Y0(i,j) + Storage.window_size(1)-1,X0(i,j):X0(i,j) + Storage.window_size(2)-1);
-
 try
     Storage.correlation_maps{i,j} = normxcorr2(sliding_windows_1,sliding_windows_2);
 catch ME
@@ -209,32 +220,23 @@ end
 end
 
 function [x_start,x_end,y_start,y_end] = validate(Storage,x_start,x_end,y_start,y_end)
+%validate Корректировка положения окон опроса в случае выхода за границы
+%изобажения
+%   Если окно опроса выходит за изображение, то сдвигаем внутрь изображения
 
 [H,W] = size(Storage.image_1);
 
-if x_start < 1
-    x_end = x_end + 1 - x_start;
-    x_start = 1;
-end
-if x_end > W
-    x_start = x_start - x_end + W;
-    x_end = W;
-end
-if y_start < 1
-    y_end = y_end + 1 - y_start;
-    y_start = 1;
-end
-if y_end > H
-    y_start = y_start - y_end + H;
-    y_end = H;
-end
+if x_start < 1,  x_end = x_end + 1 - x_start;    x_start = 1;  end
+if x_end > W,    x_start = x_start - x_end + W;  x_end = W;    end
+if y_start < 1,  y_end = y_end + 1 - y_start;    y_start = 1;  end
+if y_end > H,    y_start = y_start - y_end + H;  y_end = H;    end
 
 end
 
 function direct_x(Storage)
-
+% Для крайнего правого столбца перемножение не выполняется
 for i = 1:size(Storage.correlation_maps,1)
-    for j = 1:size(Storage.correlation_maps,2)-1 % Для крайнего правого столбца перемножение не выполняется
+    for j = 1:size(Storage.correlation_maps,2)-1
         Storage.correlation_maps{i,j} = Storage.correlation_maps{i,j}.*Storage.correlation_maps{i,j+1};
     end
 end
@@ -242,8 +244,8 @@ end
 end
 
 function direct_y(Storage)
-
-for i = 1:size(Storage.correlation_maps,1)-1 % Для крайней нижней строки перемножение не выполняется
+% Для крайней нижней строки перемножение не выполняется
+for i = 1:size(Storage.correlation_maps,1)-1
     for j = 1:size(Storage.correlation_maps,2)
         Storage.correlation_maps{i,j} = Storage.correlation_maps{i,j}.*Storage.correlation_maps{i+1,j};
     end

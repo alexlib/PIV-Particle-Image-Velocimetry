@@ -1,16 +1,16 @@
 function [varargout] = validate_outliers(Storage,varargin)
-%Функция проверки на выбросы методом нормализованной медианы
+%validate_outliers Проверка на выбросы методом нормализованной медианы
 % Возможно проверить один конкретный вектор на выброс, а также задать свои
 % параметры расчета
 
-% Определиние стандартный параметров
-r = 2; % Радиус окрестности центральной точки (обычно устанавливается равным 1 или 2)
-threshold = 2; % Порог флуктуация (обычно около 2)
-noise = 1.0; % Рассчитанный уровень шума при измерении (в пикселях)
-borders = true; % Рассчитывать ли границы
-single = false; % Расчет одного конкрентного вектора
+% Определиние параметров по умолчанию
+r = 2; % радиус окрестности центральной точки (обычно устанавливается равным 1 или 2)
+threshold = 2; % порог флуктуация (обычно около 2)
+noise = 1.0; % рассчитанный уровень шума при измерении (в пикселях)
+borders = true; % рассчитывать ли границы
+single = false; % расчет одного конкрентного вектора
 
-% Запись переданных параметров
+% Парсер заданных параметов
 k = 2;
 while k <= size(varargin,2)
     switch varargin{k-1}
@@ -43,15 +43,15 @@ NeighCol = Neigh(:);
 % Окрестности, исключая центральную точку
 NeighColEx = [NeighCol(1:(2*r+1)*r+r); NeighCol((2*r+1)*r+r+2:end)];
 
-% Поиск выбросов или выброса для конкретной коодинаты
-if single
+% Проверка на выброс
+if single % одиночного вектора
     if (i_single<r+1)||(j_single<r+1)||(i_single>H-r)||((j_single>W-r))
         calculate_borders([i_single,j_single]);
     else
         calculate_outliers_without_borders(i_single,j_single);
     end
     varargout{1} = outliers_coordinates(i_single,j_single);
-else
+else % всех векторов
     Storage.outliers_map = zeros(H,W);
     calculate_outliers_without_borders(1+r:H-r,1+r:W-r);
     if borders
@@ -74,11 +74,11 @@ function calculate_outliers_without_borders(i_vec,j_vec)
 end
 
 function calculate_median(i,j,c)
-    Median = median(NeighColEx); % Медиана окрестности
-    Fluct = Storage.vectors_map(i,j,c) - Median; % Колебания относительно медианы
-    Res = NeighColEx - Median; % Остаточные колебания соседей относительно медианы
-    MedianRes = median(abs(Res)); % Медианное (абсолютное) значение остатка
-    NormFluct(i,j,c) = abs(Fluct/(MedianRes + noise)); % Нормализованного колебания относительно окрестности
+    Median = median(NeighColEx); % медиана окрестности
+    Fluct = Storage.vectors_map(i,j,c) - Median; % колебания относительно медианы
+    Res = NeighColEx - Median; % остаточные колебания соседей относительно медианы
+    MedianRes = median(abs(Res)); % медианное (абсолютное) значение остатка
+    NormFluct(i,j,c) = abs(Fluct/(MedianRes + noise)); % нормализованного колебания относительно окрестности
 end
 
 function calculate_borders(varargin)
@@ -229,7 +229,6 @@ function bottom_right_median(i_vec,j_vec)
 end
 
 function [varargout] = outliers_coordinates(varargin)
-    
     if isempty(varargin)
         for i = 1:H
             for j = 1:W

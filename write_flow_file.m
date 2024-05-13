@@ -1,19 +1,18 @@
 function write_flow_file(Storage, filename,varargin)
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+%write_flow_file Запись векторной карты в .flo файл
+%   Записывает данные из класса Storage. Возможно масштабирование векторной карты
 
 % Код взят с Github: https://github.com/seungryong/FCSS
-
 % @InProceedings{kim2017,
 % author = {Seungryong Kim and Dongbo Min and Bumsub Ham and Sangryul Jeon and Stephen Lin and Kwanghoon Sohn},
 % title = {FCSS: Fully Convolutional Self-Similarity for Dense Semantic Correspondence},
 % booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), IEEE},
 % year = {2017}}
 
-% Определиние стандартный параметров
-scaling = false; % Радиус окрестности центральной точки (обычно устанавливается равным 1 или 2)
+% Определиние параметров по умолчанию
+scaling = false;
 
-% Запись переданных параметров
+% Парсер заданных параметов
 k = 1;
 while k <= size(varargin,2)
     switch varargin{k}
@@ -25,10 +24,8 @@ while k <= size(varargin,2)
     k = k + 1;
 end
 
-% Блок масштабирования векторного поля до размера изображения
-if scaling
-    Storage.vectors_map = imresize(Storage.vectors_map,size(Storage.image_1),'bilinear');
-end
+% Масштабирование векторного поля до размера изображения
+if scaling, Storage.vectors_map = imresize(Storage.vectors_map,size(Storage.image_1),'bilinear'); end
 
 TAG_STRING = 'PIEH';    % use this when WRITING the file
 
@@ -74,5 +71,4 @@ tmp = tmp';
 fwrite(fid, tmp, 'float32');
 
 fclose(fid);
-
 end

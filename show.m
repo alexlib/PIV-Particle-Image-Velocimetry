@@ -1,4 +1,5 @@
 function show(Storage)
+%show Визуализатор результатов обработки
 
 % Создание окна
 fig = uifigure('Position',[200 100 1000 600]);
@@ -120,8 +121,7 @@ if src.Value
             x0 = xc - round(w/2) + 0.5;
             y0 = yc - round(h/2) + 0.5;
             % Визуализация маркеров
-            % Граничные окна опроса подкрашены другим цветом
-            if (i == 1)||(j == 1)||(i == size_map(1))||(j == size_map(2))
+            if (i == 1)||(j == 1)||(i == size_map(1))||(j == size_map(2)) % Граничные окна опроса подкрашены другим цветом
                 rectangle('Position',[x0 y0 w h],'EdgeColor','red','LineWidth',2.0,'Parent', parent);
                 plot(xc,yc,'-s','MarkerFaceColor','red','MarkerEdgeColor','red','MarkerSize',5,'Parent', parent);
             else
@@ -200,6 +200,7 @@ dr3.VData = r3vm(1:density:end,1:density:end,2);
 end
 
 function change_density_streamslice(src,Storage,list_Graphics,parent)
+
 % Расчёт количества графических объектов типа 'Line'
 size_prev = size(parent.Children,1) - list_Graphics;
 % Запоминаем цвет и толщину линии предыдущего streamslice
@@ -212,6 +213,7 @@ streamslice(Storage.centers_map(:,:,1),Storage.centers_map(:,:,2),Storage.vector
 % Устанавливаем параметры предыдущего streamslice
 set(parent.Children(1:end-list_Graphics),'Color',color);
 set(parent.Children(1:end-list_Graphics),'LineWidth',linewidth);
+
 end
 
 function change_background(src,Storage,background,colormapDrop,parent)
@@ -270,6 +272,7 @@ end
 end
 
 function change_scale(src,Storage,density,dv,ovm,do,ivm,di,r2vm,dr2,r3vm,dr3)
+
 scale = src.Value;
 
 dv.UData = Storage.vectors_map(1:density:end,1:density:end,1)*scale;
@@ -286,22 +289,24 @@ dr2.VData = r2vm(1:density:end,1:density:end,2)*scale;
 
 dr3.UData = r3vm(1:density:end,1:density:end,1)*scale;
 dr3.VData = r3vm(1:density:end,1:density:end,2)*scale;
+
 end
 
 function change_linewidth(src,dv,do,di,dr2,dr3)
+
 dv.LineWidth = src.Value;
 do.LineWidth = src.Value;
 di.LineWidth = src.Value;
 dr2.LineWidth = src.Value;
 dr3.LineWidth = src.Value;
-end
 
+end
 
 function [dv,do,di,dr2,dr3,outliers_vectors_map,interpolate_vectors_map,replace_2nd_vectors_map,replace_3nd_vectors_map] = visual_vectors(Storage,parent,scale,linewidth,colorvec)
 
 [H,W] = size(Storage.vectors_map,1:2);
 
-% Инициализация масок выбросов и замен
+% Инициализация и запись масок выбросов и замен
 outliers_vectors_map = zeros(H,W,2);
 for i = 1:H
     for j = 1:W

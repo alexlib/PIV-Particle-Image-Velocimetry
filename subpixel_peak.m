@@ -1,12 +1,12 @@
 function subpixel_peak(Storage,varargin)
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+%subpixel_peak Субпикселульное уточнение величины смещения
+%   Возможно выбрать метод апроксимации корреляционного пика
 
-% Определиние стандартных параметров
-eps = 1e-7;
+% Определиние параметров по умолчанию
+eps = 1e-7; % добавка для исключения log(0) % возможно стоит установить 1.1
 method = 'gaussian';
 
-% Запись переданных параметров
+% Парсер заданных параметов
 k = 2;
 while k <= size(varargin,2)
     switch varargin{k-1}
@@ -18,17 +18,20 @@ while k <= size(varargin,2)
     k = k + 2;
 end
 
+% Удаление последнего прохода и добавка постоянной сотовляющей к корреляционной карте
 Storage.vectors_map = Storage.vectors_map - Storage.vectors_map_last_pass;
+Storage.correlation_maps{:,:} = Storage.correlation_maps{:,:} + eps;
 
+% Апроксимация
 [H,W] = size(Storage.vectors_map_last_pass,1:2);
 for i = 1:H
     for j = 1:W
         x_peak = Storage.vectors_map_last_pass(i,j,1) + Storage.window_size(2);
         y_peak = Storage.vectors_map_last_pass(i,j,2) + Storage.window_size(1);
+        % Проверка на граничные значения
         if ((x_peak_1 == 1)||(y_peak_1 == 1)||(x_peak == 2*Storage.window_size(2)-1)||(y_peak == 2*Storage.window_size(1)-1))
             Storage.vectors_map(i,j,:) = Storage.vectors_map(i,j,:) + Storage.vectors_map_last_pass(i,j,:);
         else
-            Storage.correlation_maps{i,j} = Storage.correlation_maps{i,j} + eps;
             center = Storage.correlation_maps{i,j}(y_peak,x_peak);
             left = Storage.correlation_maps{i,j}(y_peak,x_peak-1);
             right = Storage.correlation_maps{i,j}(y_peak,x_peak+1);
@@ -57,6 +60,8 @@ for i = 1:H
     end
 end
 
+% Запись результирующего вектороного поля и возвращение исходной корреляционной карты
 Storage.vectors_map = Storage.vectors_map + Storage.vectors_map_last_pass;
+Storage.correlation_maps{:,:} = Storage.correlation_maps{:,:} - eps;
 
 end
