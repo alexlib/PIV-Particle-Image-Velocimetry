@@ -51,7 +51,7 @@ Storage.overlap = overlap;
 
 % Деформации изображения
 if deform
-    Storage.vectors_map_last_pass = imresize(Storage.vectors_map_last_pass,size(Storage.image_1),'nearest');
+    Storage.vectors_map_last_pass = imresize(Storage.vectors_map_last_pass,size(Storage.image_1),'bilinear');
     switch deform_type
         case 'symmetric'
             Storage.image_1 = imwarp(Storage.image_1,-Storage.vectors_map_last_pass/2);
@@ -142,16 +142,26 @@ if restriction % С ограничением
     y_end = window_size(1) + round(restriction_area*window_size(1));
     for i = 1:size_map(1)
         for j = 1:size_map(2)
-            limit_corr_map = Storage.correlation_maps{i,j}(y_start:y_end,x_start:x_end);
-            [y_peak,x_peak] = find(limit_corr_map==max(limit_corr_map(:)));
-            Storage.vectors_map_last_pass(i,j,:) = [x_peak(1) - window_size(2) + x_start - 1,y_peak(1) - window_size(1) + y_start - 1];
+            if Storage.outliers_map(i,j)
+                Storage.vectors_map_last_pass(i,j,:) = [0,0];
+                Storage.outliers_map(i,j) = 0;
+            else
+                limit_corr_map = Storage.correlation_maps{i,j}(y_start:y_end,x_start:x_end);
+                [y_peak,x_peak] = find(limit_corr_map==max(limit_corr_map(:)));
+                Storage.vectors_map_last_pass(i,j,:) = [x_peak(1) - window_size(2) + x_start - 1,y_peak(1) - window_size(1) + y_start - 1];
+            end
         end
     end
 else % Без ограничения
     for i = 1:size_map(1)
         for j = 1:size_map(2)
-            [y_peak,x_peak] = find(Storage.correlation_maps{i,j}==max(Storage.correlation_maps{i,j}(:)));
-            Storage.vectors_map_last_pass(i,j,:) = [x_peak(1) - window_size(2),y_peak(1) - window_size(1)];
+            if Storage.outliers_map(i,j)
+                Storage.vectors_map_last_pass(i,j,:) = [0,0];
+                Storage.outliers_map(i,j) = 0;
+            else
+                [y_peak,x_peak] = find(Storage.correlation_maps{i,j}==max(Storage.correlation_maps{i,j}(:)));
+                Storage.vectors_map_last_pass(i,j,:) = [x_peak(1) - window_size(2),y_peak(1) - window_size(1)];
+            end
         end
     end
 end
@@ -206,12 +216,13 @@ sliding_windows_1 = Storage.image_1(Y0(i,j):Y0(i,j) + Storage.window_size(1)-1,X
 try
     Storage.correlation_maps{i,j} = normxcorr2(sliding_windows_1,sliding_windows_2);
 catch ME
-    if (strcmp(ME.identifier,'images:normxcorr2:sameElementsInTemplate'))
+    if (strcmp(ME.identifier,'images:normxcorr2:sameElementsInTemplate')) % в случае однородности окна опроса
         if double_corr
             Storage.correlation_maps{i,j} = ones(2*Storage.window_size-1);
         else
             Storage.correlation_maps{i,j} = zeros(2*Storage.window_size-1);
         end
+        Storage.outliers_map(i,j) = 1; % запись в выбросы для особого поиска корреляционного пика
     else
         error(ME.identifier);
     end

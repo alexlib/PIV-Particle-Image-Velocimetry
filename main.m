@@ -26,7 +26,28 @@ clear Storage
 
 Storage = Storage();
 
-load_images(Storage,'SQG_00001_img1.tif','SQG_00001_img2.tif');
+load_images(Storage,'VortexPair_1.tif','VortexPair_2.tif');
 
 preprocessing(Storage);
 
+pass(Storage,[64,64],[32,32],'type_pass','first');
+
+validate_outliers(Storage,'threshold',1);
+
+interpolate_outliers(Storage);
+
+pass(Storage,[32,32],[16,16],'type_pass','next'); % 'deform','symmetric'
+
+validate_outliers(Storage,'threshold',1);
+
+interpolate_outliers(Storage);
+
+pass(Storage,[16,16],[8,8],'type_pass','next');
+
+validate_outliers(Storage,'threshold',1);
+
+interpolate_outliers(Storage);
+
+%subpixel_peak(Storage);
+
+show(Storage); % визуализация

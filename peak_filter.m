@@ -5,6 +5,7 @@ function [varargout] = peak_filter(Storage,varargin)
 
 % Определиние параметров по умолчанию
 threshold = 0.8; % Порог фильтрации
+single = false;
 
 % Парсер заданных параметов
 k = 2;

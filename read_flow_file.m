@@ -57,6 +57,7 @@ tmp = reshape(tmp, [width*nBands, height]);
 tmp = tmp';
 
 % Запись векторного поля в класс Storage
+Storage.vectors_map_last_pass = zeros(height,width,nBands);
 Storage.vectors_map_last_pass(:,:,1) = tmp(:, (1:width)*nBands-1);
 Storage.vectors_map_last_pass(:,:,2) = tmp(:, (1:width)*nBands);
 Storage.vectors_map = Storage.vectors_map_last_pass;

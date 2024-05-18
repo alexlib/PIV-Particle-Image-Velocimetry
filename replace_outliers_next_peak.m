@@ -72,7 +72,7 @@ for n = 1:number_outliers
     x_peak_1(n) = Storage.vectors_map_last_pass(i,j,1) + Storage.window_size(2);
     y_peak_1(n) = Storage.vectors_map_last_pass(i,j,2) + Storage.window_size(1);
     value_peak_1(n) = Storage.correlation_maps{i,j}(y_peak_1(n),x_peak_1(n));
-    Storage.correlation_maps{i,j}(y_peak_1,x_peak_1) = 0;
+    Storage.correlation_maps{i,j}(y_peak_1(n),x_peak_1(n)) = 0;
     
     % Находим второй корреляционный пик
     limit_corr_map = Storage.correlation_maps{i,j}(y_start:y_end,x_start:x_end);
@@ -91,7 +91,7 @@ for n = 1:number_outliers
         Storage.vectors_map(i,j,:) = squeeze(Storage.vectors_map(i,j,:)) - [x_peak_2(n);y_peak_2(n)];
         
         value_peak_2(n) = Storage.correlation_maps{i,j}(y_peak_2(n) + Storage.window_size(1),x_peak_2(n) + Storage.window_size(2));
-        Storage.correlation_maps{i,j}(y_peak_2 + Storage.window_size(1),x_peak_2 + Storage.window_size(2)) = 0;
+        Storage.correlation_maps{i,j}(y_peak_2(n) + Storage.window_size(1),x_peak_2(n) + Storage.window_size(2)) = 0;
         
         % Находим третий корреляционный пик
         limit_corr_map = Storage.correlation_maps{i,j}(y_start:y_end,x_start:x_end);
