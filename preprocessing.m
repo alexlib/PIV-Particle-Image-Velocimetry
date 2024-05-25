@@ -1,6 +1,6 @@
 function preprocessing(Storage)
 %preprocessing Предобработка изображений
-%   Выполняет перевод из цветного в черно-белое и приведение к типу данных uint8.
+%   Выполняет перевод из цветного в черно-белое и приведение к типу данных double.
 %   Подразумевается что исходные изображения одинаковые по размеру
 
 size_image = size(Storage.src_image_1);
@@ -14,10 +14,10 @@ else
     Storage.image_2 = Storage.src_image_2;
 end
 
-% Приведение к типу данных uint8
-if ~isa(Storage.image_1,'uint8')
-    Storage.image_1 = im2uint8(Storage.image_1);
-    Storage.image_2 = im2uint8(Storage.image_2);
+% Приведение к типу данных double
+if ~isa(Storage.image_1,'double')
+    Storage.image_1 = double(Storage.image_1);
+    Storage.image_2 = double(Storage.image_2);
 end
 
 end

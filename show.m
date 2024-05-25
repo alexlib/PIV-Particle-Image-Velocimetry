@@ -101,10 +101,6 @@ uislider(grid2,"Limits",[1,20],"MajorTicks",[1,5,10,15,20],"ValueChangedFcn",@(s
 cbx = uicheckbox(grid2,'Text','Show sliding windows','ValueChangedFcn',@(src,event) visual_sliding_windows(src,Storage,ax));
 cbx.Layout.Column = 1:2;
 
-% Отладочный функционал (Отображение окон опроса второго изображения)
-cbx_temp = uicheckbox(grid2,'Text','Show sliding windows 2','ValueChangedFcn',@(src,event) visual_sliding_windows_2(src,Storage,ax));
-cbx_temp.Layout.Column = 1:2;
-
 end
 
 function visual_sliding_windows(src,Storage,parent)
@@ -122,37 +118,6 @@ if src.Value
             y0 = yc - round(h/2) + 0.5;
             % Визуализация маркеров
             if (i == 1)||(j == 1)||(i == size_map(1))||(j == size_map(2)) % Граничные окна опроса подкрашены другим цветом
-                rectangle('Position',[x0 y0 w h],'EdgeColor','red','LineWidth',2.0,'Parent', parent);
-                plot(xc,yc,'-s','MarkerFaceColor','red','MarkerEdgeColor','red','MarkerSize',5,'Parent', parent);
-            else
-                rectangle('Position',[x0 y0 w h],'EdgeColor','yellow','LineWidth',1.5,'Parent', parent);
-                plot(xc,yc,'-s','MarkerFaceColor','green','MarkerEdgeColor','green','MarkerSize',5,'Parent', parent);
-            end
-        end
-    end
-else
-    size_prev = 2*size_map(1)*size_map(2);
-    delete(parent.Children(1:size_prev));
-end
-
-end
-
-function visual_sliding_windows_2(src,Storage,parent)
-
-size_map = size(Storage.centers_map,1:2);
-if src.Value
-    for i = 1:size_map(1)
-        for j = 1:size_map(2)
-            xc = Storage.centers_map(i,j,1);
-            yc = Storage.centers_map(i,j,2);
-            w = Storage.window_size(2);
-            h = Storage.window_size(1);
-            % Поправка в 0.5 связанна с отрисовкой прямоугольников
-            x0 = Storage.temp_X0_2(i,j) - 0.5;
-            y0 = Storage.temp_Y0_2(i,j) - 0.5;
-            % Визуализация маркеров
-            % Граничные окна опроса подкрашены другим цветом
-            if (i == 1)||(j == 1)||(i == size_map(1))||(j == size_map(2))
                 rectangle('Position',[x0 y0 w h],'EdgeColor','red','LineWidth',2.0,'Parent', parent);
                 plot(xc,yc,'-s','MarkerFaceColor','red','MarkerEdgeColor','red','MarkerSize',5,'Parent', parent);
             else

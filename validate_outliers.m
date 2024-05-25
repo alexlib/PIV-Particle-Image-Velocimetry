@@ -6,7 +6,7 @@ function [varargout] = validate_outliers(Storage,varargin)
 % Определиние параметров по умолчанию
 r = 2; % радиус окрестности центральной точки (обычно устанавливается равным 1 или 2)
 threshold = 2; % порог флуктуация (обычно около 2)
-noise = 1.0; % рассчитанный уровень шума при измерении (в пикселях)
+noise = 0.5; % рассчитанный уровень шума при измерении (в пикселях)
 borders = true; % рассчитывать ли границы
 single = false; % расчет одного конкрентного вектора
 
@@ -52,7 +52,6 @@ if single % одиночного вектора
     end
     varargout{1} = outliers_coordinates(i_single,j_single);
 else % всех векторов
-    Storage.outliers_map = zeros(H,W);
     calculate_outliers_without_borders(1+r:H-r,1+r:W-r);
     if borders
         calculate_borders;
