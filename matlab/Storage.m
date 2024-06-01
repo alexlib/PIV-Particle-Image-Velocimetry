@@ -21,7 +21,7 @@ classdef Storage < handle
     methods
         function obj = Storage()
             %Инициализация класса
-            %   Инициализация свойст класса
+            %   Инициализация свойств класса
         end
     end
 end

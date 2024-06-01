@@ -1,9 +1,8 @@
 function [X0,Y0] = images_split(Storage,type_pass,multigrid,borders)
-%images_split Рассчет координат окон опроса на изображении
+%images_split Расчет координат окон опроса на изображении
 %   Выполняет расчет координат окон опроса без учета векторного поля
 
-if strcmp(type_pass,'first') || (multigrid)
-    % Размер изображения
+if strcmp(type_pass,'first') || (multigrid) % рассчитываем координаты положения окон опроса
     image_size = size(Storage.image_1);
     
     % Количество окон опроса по горизонтали и вертикали
@@ -23,11 +22,11 @@ if strcmp(type_pass,'first') || (multigrid)
     % Размер центрированной области покрытия окнами опроса изображения
     search_area_size = [x_left_remainder, y_top_remainder, w, h];
     
-    % Вычисление центров оконо опроса
-    if (Storage.window_size(2) - Storage.overlap(2)) > 1 % Для наложения больше одного пикселя
+    % Вычисление центров окон опроса
+    if (Storage.window_size(2) - Storage.overlap(2)) > 1 % для наложения больше одного пикселя
         x = (search_area_size(1)+ceil(Storage.window_size(2)/2) - 1):(Storage.window_size(2) - Storage.overlap(2)):(search_area_size(1)+search_area_size(3)-ceil(Storage.window_size(2)/2));
         y = (search_area_size(2)+ceil(Storage.window_size(1)/2) - 1):(Storage.window_size(1) - Storage.overlap(1)):(search_area_size(2)+search_area_size(4)-ceil(Storage.window_size(1)/2));
-    else                                 % Для наложения равного одному пикселю
+    else                                                 % для наложения равного одному пикселю
         x = (search_area_size(1)+ceil(Storage.window_size(2)/2) - 1):(Storage.window_size(2) - Storage.overlap(2)):(search_area_size(1)+search_area_size(3)-ceil(Storage.window_size(2)/2) - 1);
         y = (search_area_size(2)+ceil(Storage.window_size(1)/2) - 1):(Storage.window_size(1) - Storage.overlap(1)):(search_area_size(2)+search_area_size(4)-ceil(Storage.window_size(1)/2) - 1);
     end
@@ -35,7 +34,7 @@ if strcmp(type_pass,'first') || (multigrid)
     % Добавление окон опроса на границах изображения для полного покрытия изображения
     if borders
         if remainder(1) ~= 0
-            if remainder(1) == 1 % Если остаточная граница равна одному пикселю
+            if remainder(1) == 1 % если остаточная граница равна одному пикселю
                 y = [y(:);y(end) + floor(remainder(1)/2) + mod(remainder(1),2)];
             else
                 y = [y(1) - floor(remainder(1)/2);y(:);y(end) + floor(remainder(1)/2) + mod(remainder(1),2)];
@@ -50,7 +49,7 @@ if strcmp(type_pass,'first') || (multigrid)
         end
     end
     
-    % Опредление матриц координат центров окон опроса
+    % Определение матриц координат центров окон опроса
     [X,Y] = meshgrid(x,y);
     
     % Запись центров окон опроса
@@ -62,7 +61,7 @@ if strcmp(type_pass,'first') || (multigrid)
     % верхнем углу окна
     X0 = floor(X)-ceil(Storage.window_size(2)/2) + 1;
     Y0 = floor(Y)-ceil(Storage.window_size(1)/2) + 1;
-else
+else % если не требуется расчет новых координат окон опроса
     X0 = floor(Storage.centers_map(:,:,1))-ceil(Storage.window_size(2)/2) + 1;
     Y0 = floor(Storage.centers_map(:,:,2))-ceil(Storage.window_size(1)/2) + 1;
 end

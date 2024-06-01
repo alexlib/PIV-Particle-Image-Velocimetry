@@ -9,10 +9,10 @@ function write_flow_file(Storage, filename,varargin)
 % booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), IEEE},
 % year = {2017}}
 
-% Определиние параметров по умолчанию
+% Параметры по умолчанию
 scaling = false;
 
-% Парсер заданных параметов
+% Парсер заданных параметров
 k = 1;
 while k <= size(varargin,2)
     switch varargin{k}

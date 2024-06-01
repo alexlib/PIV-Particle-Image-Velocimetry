@@ -1,5 +1,5 @@
-function processing_1(Storage)
-% Однопроходный сценарий
+function processing_5(Storage)
+% Четырехпроходный сценарий
 
 preprocessing(Storage);
 
@@ -11,7 +11,7 @@ interpolate_outliers(Storage);
 
 smoothing(Storage);
 
-pass(Storage,[16,16],[8,8],'type_pass','next','deform','symmetric');
+pass(Storage,[16,16],[8,8],'type_pass','next');
 
 validate_outliers(Storage);
 
@@ -19,7 +19,7 @@ interpolate_outliers(Storage);
 
 smoothing(Storage);
 
-pass(Storage,[8,8],[4,4],'type_pass','next','deform','symmetric');
+pass(Storage,[8,8],[4,4],'type_pass','next');
 
 validate_outliers(Storage);
 

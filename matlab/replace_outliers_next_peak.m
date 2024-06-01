@@ -1,11 +1,11 @@
 function replace_outliers_next_peak(Storage,varargin)
-%replace_outliers_next_peak Замена выбросов 2 или 3 корреляционным пиком
-%   Возможно задать ограничение поиска корреляционного пика
+%replace_outliers_next_peak Замена выбросов 2 и 3 корреляционным пиком
+%   Возможно задать ограничение области поиска корреляционного пика
 
-% Определиние параметров по умолчанию
+% Определение параметров по умолчанию
 restriction = false;
 
-% Парсер заданных параметов
+% Парсер заданных параметров
 k = 2;
 while k <= size(varargin,2)
     switch varargin{k-1}
@@ -24,19 +24,19 @@ while k <= size(varargin,2)
 end
 
 % Определение координат поиска корреляционного пика
-if restriction % при ограничении 
+if restriction % с ограничением области поиска
     x_start = Storage.window_size(2) - round(restriction_area*Storage.window_size(2));
     x_end = Storage.window_size(2) + round(restriction_area*Storage.window_size(2));
     y_start = Storage.window_size(1) - round(restriction_area*Storage.window_size(1));
     y_end = Storage.window_size(1) + round(restriction_area*Storage.window_size(1));
-else
+else % без ограничения области
     x_start = 1;
     x_end = 2*Storage.window_size(2) - 1;
     y_start = 1;
     y_end = 2*Storage.window_size(1) - 1;
 end
 
-% Перевод маски выбросов Storage.outliers_map в вектор координат
+% Перевод маски выбросов в вектор координат
 [H,W] = size(Storage.outliers_map);
 outliers_vector = [];
 number_outliers = 0;
@@ -65,10 +65,11 @@ y_peak_3 = zeros(number_outliers,1);
 for n = 1:number_outliers
     i = outliers_vector(n,1);
     j = outliers_vector(n,2);
-
+    
+    % Вычитаем векторное поле последнего прохода
     Storage.vectors_map(i,j,:) = Storage.vectors_map(i,j,:) - Storage.vectors_map_last_pass(i,j,:);
     
-    % Запоминаем координаты и величину первого корреляционного пика и зануляем его
+    % Запоминаем координаты и величину первого корреляционного пика и обнуляем его
     x_peak_1(n) = Storage.vectors_map_last_pass(i,j,1) + Storage.window_size(2);
     y_peak_1(n) = Storage.vectors_map_last_pass(i,j,2) + Storage.window_size(1);
     value_peak_1(n) = Storage.correlation_maps{i,j}(y_peak_1(n),x_peak_1(n));
@@ -87,9 +88,10 @@ for n = 1:number_outliers
     i = outliers_vector(n,1);
     j = outliers_vector(n,2);
 
-    if validate_outliers(Storage,'single',[i,j])
+    if validate_outliers(Storage,'single',[i,j]) % если 2-ой пик оказался выбросом
         Storage.vectors_map(i,j,:) = squeeze(Storage.vectors_map(i,j,:)) - [x_peak_2(n);y_peak_2(n)];
         
+        % Запоминаем величину 2-го корреляционного пика
         value_peak_2(n) = Storage.correlation_maps{i,j}(y_peak_2(n) + Storage.window_size(1),x_peak_2(n) + Storage.window_size(2));
         Storage.correlation_maps{i,j}(y_peak_2(n) + Storage.window_size(1),x_peak_2(n) + Storage.window_size(2)) = 0;
         
@@ -99,7 +101,7 @@ for n = 1:number_outliers
         x_peak_3(n) = x_peak(1) - Storage.window_size(2) + x_start - 1;
         y_peak_3(n) = y_peak(1) - Storage.window_size(1) + y_start - 1;
         Storage.vectors_map(i,j,:) = squeeze(Storage.vectors_map(i,j,:)) + [x_peak_3(n);y_peak_3(n)];
-    else
+    else % записываем в векторное поле положение 2-го корреляционного пика
         Storage.vectors_map_last_pass(i,j,:) = [x_peak_2(n),y_peak_2(n)];
         Storage.outliers_map(i,j) = 0;
         Storage.replaces_map(i,j) = 2;
@@ -111,15 +113,15 @@ for n = 1:number_outliers
     i = outliers_vector(n,1);
     j = outliers_vector(n,2);
 
-    if Storage.replaces_map(i,j) ~= 2
-        if validate_outliers(Storage,'single',[i,j])
+    if Storage.replaces_map(i,j) ~= 2 % заменен ли этот вектор 2-ым пиком
+        if validate_outliers(Storage,'single',[i,j]) % если 3-ий пик оказался выбросом
             Storage.vectors_map(i,j,:) = squeeze(Storage.vectors_map(i,j,:)) - [x_peak_3(n);y_peak_3(n)];
             
             % Возвращаем исходные значения векторной карты и корреляционных пиков
             Storage.vectors_map(i,j,:) = Storage.vectors_map(i,j,:) + Storage.vectors_map_last_pass(i,j,:);
             Storage.correlation_maps{i,j}(y_peak_1(n) + Storage.window_size(1),x_peak_1(n) + Storage.window_size(2)) = value_peak_1(n);
             Storage.correlation_maps{i,j}(y_peak_2(n) + Storage.window_size(1),x_peak_2(n) + Storage.window_size(2)) = value_peak_2(n);
-        else
+        else % записываем в векторное поле положение 3-го корреляционного пика
             Storage.vectors_map_last_pass(i,j,:) = [x_peak_3(n),y_peak_3(n)];
             Storage.outliers_map(i,j) = 0;
             Storage.replaces_map(i,j) = 3;

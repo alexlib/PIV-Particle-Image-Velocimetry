@@ -1,10 +1,12 @@
+% Скрипт тестирования заданного сценария обработки на 5-ти парах
+% изображений с различными видами потока
 
 %--------------------------------------------------------------------------
 % Сценарий проверки
 processing = @processing_1;
 
 % Название сценария
-name = 'first';
+name = 'single pass fast processing';
 %--------------------------------------------------------------------------
 
 %--------------------------------------------------------------------------
@@ -15,9 +17,9 @@ Storage = Storage();
 
 %--------------------------------------------------------------------------
 % Блок первой проверки
-image_address_1 = 'uniform_00001_img1.tif';
-image_address_2 = 'uniform_00001_img2.tif';
-flow_address = 'uniform_00001_flow.flo';
+image_address_1 = 'demos/uniform_00001_img1.tif';
+image_address_2 = 'demos/uniform_00001_img2.tif';
+flow_address = 'demos/uniform_00001_flow.flo';
 % vectors_map = load('vectors_map.mat');
 visual_map = false; visual_bar = false;
 mean_target = 0.0161; max_target = 0.1351;
@@ -28,9 +30,9 @@ div_vec_1 = get_compared(Storage,processing,image_address_1,image_address_2, ...
 
 %--------------------------------------------------------------------------
 % Блок второй проверки
-image_address_1 = 'JHTDB_channel_00176_img1.tif';
-image_address_2 = 'JHTDB_channel_00176_img2.tif';
-flow_address = 'JHTDB_channel_00176_flow.flo';
+image_address_1 = 'demos/JHTDB_channel_00176_img1.tif';
+image_address_2 = 'demos/JHTDB_channel_00176_img2.tif';
+flow_address = 'demos/JHTDB_channel_00176_flow.flo';
 % vectors_map = load('vectors_map.mat');
 visual_map = false; visual_bar = false;
 mean_target = 0.0866; max_target = 0.5735;
@@ -41,9 +43,9 @@ div_vec_2 = get_compared(Storage,processing,image_address_1,image_address_2, ...
 
 %--------------------------------------------------------------------------
 % Блок третьей проверки
-image_address_1 = 'backstep_Re800_00007_img1.tif';
-image_address_2 = 'backstep_Re800_00007_img2.tif';
-flow_address = 'backstep_Re800_00007_flow.flo';
+image_address_1 = 'demos/backstep_Re800_00007_img1.tif';
+image_address_2 = 'demos/backstep_Re800_00007_img2.tif';
+flow_address = 'demos/backstep_Re800_00007_flow.flo';
 % vectors_map = load('vectors_map.mat');
 visual_map = false; visual_bar = false;
 mean_target = 0.0426; max_target = 1.2041;
@@ -54,9 +56,9 @@ div_vec_3 = get_compared(Storage,processing,image_address_1,image_address_2, ...
 
 %--------------------------------------------------------------------------
 % Блок четвертой проверки
-image_address_1 = 'SQG_00001_img1.tif';
-image_address_2 = 'SQG_00001_img2.tif';
-flow_address = 'SQG_00001_flow.flo';
+image_address_1 = 'demos/SQG_00001_img1.tif';
+image_address_2 = 'demos/SQG_00001_img2.tif';
+flow_address = 'demos/SQG_00001_flow.flo';
 % vectors_map = load('vectors_map.mat');
 visual_map = false; visual_bar = false;
 mean_target = 0.4147; max_target = 4.3443;
@@ -67,9 +69,9 @@ div_vec_4 = get_compared(Storage,processing,image_address_1,image_address_2, ...
 
 %--------------------------------------------------------------------------
 % Блок пятой проверки
-image_address_1 = 'cylinder_Re40_00001_img1.tif';
-image_address_2 = 'cylinder_Re40_00001_img2.tif';
-flow_address = 'cylinder_Re40_00001_flow.flo';
+image_address_1 = 'demos/cylinder_Re40_00001_img1.tif';
+image_address_2 = 'demos/cylinder_Re40_00001_img2.tif';
+flow_address = 'demos/cylinder_Re40_00001_flow.flo';
 % vectors_map = load('vectors_map.mat');
 visual_map = false; visual_bar = false;
 mean_target = 0.0500; max_target = 0.4284;

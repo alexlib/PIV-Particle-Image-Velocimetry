@@ -1,19 +1,23 @@
 function cross_correlate(Storage,size_map,X0,Y0,type_pass,deform,double_corr)
+%cross_correlate Расчет Кросскорреляция окон опроса
+%   Выполняет кросскорреляцию окон опроса с помощью встроенной функции
+%   Matlab normxcorr2
 
 % Инициализация новых масок
 Storage.outliers_map = zeros(size_map);
 Storage.replaces_map = zeros(size_map);
 
-% Инициализаци новых корреляционных карт
+% Инициализация новых корреляционных карт
 Storage.correlation_maps = cell(size_map);
 
-if strcmp(type_pass,'first') || (deform) % В случае отсутвия смещения окон опроса для второго изображения
+if strcmp(type_pass,'first') || (deform) % в случае отсутствия смещения окон опроса для второго изображения
     for i = 1:size_map(1)
         for j = 1:size_map(2)
             correlate(Storage,i,j,X0,Y0,double_corr);
         end
     end
-else % Центр без границ
+else % имеются смещения окон опроса для второго изображения
+    % Центр без границ
     for i = 2:size_map(1)-1
         for j = 2:size_map(2)-1
             correlate(Storage,i,j,X0,Y0,double_corr,'offset','validate_borders');
@@ -31,19 +35,16 @@ end
 
 end
 
-
 function correlate(Storage,i,j,X0,Y0,double_corr,varargin)
-%cross_correlate Кросскорреляция окн опроса
-%   Для кросскорреляции используется встроенная функция normxcorr2
 
-% Опредление параметров по умолчанию
+% Определение параметров по умолчанию
 validate_borders = false;
 x_start = X0(i,j);
 x_end = X0(i,j) + Storage.window_size(2)-1;
 y_start = Y0(i,j);
 y_end = Y0(i,j) + Storage.window_size(1)-1;
 
-% Парсер заданных параметов
+% Парсер заданных параметров
 k = 1;
 while k <= size(varargin,2)
     switch varargin{k}
@@ -58,13 +59,18 @@ while k <= size(varargin,2)
     k = k + 1;
 end
 
+% Проверка на выход за границы изображения
 if validate_borders, [x_start,x_end,y_start,y_end] = validate(Storage,x_start,x_end,y_start,y_end); end
 
+% Формирование окон опроса из изображений
 sliding_windows_2 = Storage.image_2(y_start:y_end,x_start:x_end);
 sliding_windows_1 = Storage.image_1(Y0(i,j):Y0(i,j) + Storage.window_size(1)-1,X0(i,j):X0(i,j) + Storage.window_size(2)-1);
+
+% Выполнение кросскорреляции
 try
     Storage.correlation_maps{i,j} = normxcorr2(sliding_windows_1,sliding_windows_2);
-catch ME
+catch ME % запись ошибки, которую выдала функция normxcorr2
+    % Отработка определенной ошибки
     if (strcmp(ME.identifier,'images:normxcorr2:sameElementsInTemplate')) % в случае однородности окна опроса
         if double_corr
             Storage.correlation_maps{i,j} = ones(2*Storage.window_size-1);
@@ -72,7 +78,7 @@ catch ME
             Storage.correlation_maps{i,j} = zeros(2*Storage.window_size-1);
         end
         Storage.outliers_map(i,j) = 1; % запись в выбросы для особого поиска корреляционного пика
-    else
+    else % в случае других ошибок
         error(ME.identifier);
     end
 end
@@ -80,7 +86,7 @@ end
 end
 
 function [x_start,x_end,y_start,y_end] = validate(Storage,x_start,x_end,y_start,y_end)
-%validate Корректировка положения окон опроса в случае выхода за границы изобажения
+%validate Корректировка положения окон опроса в случае выхода за границы изображения
 %   Если окно опроса выходит за изображение, то сдвигаем внутрь изображения
 
 [H,W] = size(Storage.image_1);

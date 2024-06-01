@@ -1,4 +1,5 @@
 function processing_3(Storage)
+% Трехпроходный сценарий
 
 preprocessing(Storage);
 

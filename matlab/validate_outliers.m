@@ -3,14 +3,14 @@ function [varargout] = validate_outliers(Storage,varargin)
 % Возможно проверить один конкретный вектор на выброс, а также задать свои
 % параметры расчета
 
-% Определиние параметров по умолчанию
+% Определение параметров по умолчанию
 r = 2; % радиус окрестности центральной точки (обычно устанавливается равным 1 или 2)
 threshold = 2; % порог флуктуация (обычно около 2)
 noise = 0.5; % рассчитанный уровень шума при измерении (в пикселях)
-borders = true; % рассчитывать ли границы
-single = false; % расчет одного конкрентного вектора
+borders = true; % проверять ли границы
+single = false; % проверка одного конкретного вектора
 
-% Парсер заданных параметов
+% Парсер заданных параметров
 k = 2;
 while k <= size(varargin,2)
     switch varargin{k-1}
@@ -34,7 +34,7 @@ end
 
 % Размер векторной карты
 [H,W] = size(Storage.vectors_map,1:2);
-% Нормализованного колебания относительно окрестности
+% Нормализованные колебания (флуктуации) относительно окрестности
 NormFluct = zeros(H,W,2);
 % Область с центральной точкой
 Neigh = zeros(2*r+1,2*r+1);
@@ -50,13 +50,13 @@ if single % одиночного вектора
     else
         calculate_outliers_without_borders(i_single,j_single);
     end
-    varargout{1} = outliers_coordinates(i_single,j_single);
+    varargout{1} = check_outliers(i_single,j_single);
 else % всех векторов
     calculate_outliers_without_borders(1+r:H-r,1+r:W-r);
     if borders
         calculate_borders;
     end
-    outliers_coordinates;
+    check_outliers;
 end
 
 function calculate_outliers_without_borders(i_vec,j_vec)
@@ -66,18 +66,18 @@ function calculate_outliers_without_borders(i_vec,j_vec)
                 Neigh = Storage.vectors_map(i-r:i+r,j-r:j+r,c);
                 NeighCol = Neigh(:);
                 NeighColEx = [NeighCol(1:(2*r+1)*r+r); NeighCol((2*r+1)*r+r+2:end)];
-                calculate_median(i,j,c);
+                calculate_norm(i,j,c);
             end
         end
     end
 end
 
-function calculate_median(i,j,c)
+function calculate_norm(i,j,c)
     Median = median(NeighColEx); % медиана окрестности
     Fluct = Storage.vectors_map(i,j,c) - Median; % колебания относительно медианы
     Res = NeighColEx - Median; % остаточные колебания соседей относительно медианы
     MedianRes = median(abs(Res)); % медианное (абсолютное) значение остатка
-    NormFluct(i,j,c) = abs(Fluct/(MedianRes + noise)); % нормализованного колебания относительно окрестности
+    NormFluct(i,j,c) = abs(Fluct/(MedianRes + noise));
 end
 
 function calculate_borders(varargin)
@@ -130,7 +130,7 @@ function top_median(i_vec,j_vec)
                 Neigh = Storage.vectors_map(1:i+r,j-r:j+r,c);
                 NeighCol = Neigh(:);
                 NeighColEx = [NeighCol(1:(r+i)*r+i-1); NeighCol((r+i)*r+i+1:end)];
-                calculate_median(i,j,c);
+                calculate_norm(i,j,c);
             end
         end
     end
@@ -143,7 +143,7 @@ function bottom_median(i_vec,j_vec)
                 Neigh = Storage.vectors_map(i-r:H,j-r:j+r,c);
                 NeighCol = Neigh(:);
                 NeighColEx = [NeighCol(1:(r+H-i+1)*r+r); NeighCol((r+H-i+1)*r+r+2:end)];
-                calculate_median(i,j,c);
+                calculate_norm(i,j,c);
             end
         end
     end
@@ -156,7 +156,7 @@ function left_median(i_vec,j_vec)
                 Neigh = Storage.vectors_map(i-r:i+r,1:j+r,c);
                 NeighCol = Neigh(:);
                 NeighColEx = [NeighCol(1:(2*r+1)*(j-1)+r); NeighCol((2*r+1)*(j-1)+r+2:end)];
-                calculate_median(i,j,c);
+                calculate_norm(i,j,c);
             end
         end
     end
@@ -169,7 +169,7 @@ function right_median(i_vec,j_vec)
                 Neigh = Storage.vectors_map(i-r:i+r,j-r:W,c);
                 NeighCol = Neigh(:);
                 NeighColEx = [NeighCol(1:(2*r+1)*r+r); NeighCol((2*r+1)*r+r+2:end)];
-                calculate_median(i,j,c);
+                calculate_norm(i,j,c);
             end
         end
     end
@@ -182,7 +182,7 @@ function top_left_median(i_vec,j_vec)
                 Neigh = Storage.vectors_map(1:i+r,1:j+r,c);
                 NeighCol = Neigh(:);
                 NeighColEx = [NeighCol(1:(r+i)*(j-1)+i-1); NeighCol((r+i)*(j-1)+i+1:end)];
-                calculate_median(i,j,c);
+                calculate_norm(i,j,c);
             end
         end
     end
@@ -195,7 +195,7 @@ function top_right_median(i_vec,j_vec)
                 Neigh = Storage.vectors_map(1:i+r,j-r:W,c);
                 NeighCol = Neigh(:);
                 NeighColEx = [NeighCol(1:(r+i)*r+i-1); NeighCol((r+i)*r+i+1:end)];
-                calculate_median(i,j,c);
+                calculate_norm(i,j,c);
             end
         end
     end
@@ -208,7 +208,7 @@ function bottom_left_median(i_vec,j_vec)
                 Neigh = Storage.vectors_map(i-r:H,1:j+r,c);
                 NeighCol = Neigh(:);
                 NeighColEx = [NeighCol(1:(r+H-i+1)*(j-1)+r); NeighCol((r+H-i+1)*(j-1)+r+2:end)];
-                calculate_median(i,j,c);
+                calculate_norm(i,j,c);
             end
         end
     end
@@ -221,13 +221,13 @@ function bottom_right_median(i_vec,j_vec)
                 Neigh = Storage.vectors_map(i-r:H,j-r:W,c);
                 NeighCol = Neigh(:);
                 NeighColEx = [NeighCol(1:(r+H-i+1)*r+r); NeighCol((r+H-i+1)*r+r+2:end)];
-                calculate_median(i,j,c);
+                calculate_norm(i,j,c);
             end
         end
     end
 end
 
-function [varargout] = outliers_coordinates(varargin)
+function [varargout] = check_outliers(varargin)
     if isempty(varargin)
         for i = 1:H
             for j = 1:W

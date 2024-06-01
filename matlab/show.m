@@ -9,24 +9,23 @@ grid1 = uigridlayout(fig,[1 2]);
 grid1.ColumnWidth = {200,'1x'};
 % Подпись левой области
 p = uipanel(grid1,'Title','Configuration');
-% Добавление координатных осей в правую область и колорбара
+% Добавление координатных осей в правую область и colorbar
 ax = uiaxes(grid1); colorbar(ax);
 
-% Число графиков содержищихся у родителя
+% Число графиков, содержащихся у родителя
 list_Graphics = 0;
 % Фон
 background = imshow((Storage.image_1+Storage.image_2)/2,'DisplayRange',[0,255], 'Parent', ax);
 hold(ax, 'on')
 list_Graphics = list_Graphics + 1;
-% Если не рассчитаны центры окон опроса, то принимаем за центры каждый
-% пискель изображения
+% Если не рассчитаны центры окон опроса, то принимаем за центры каждый пиксель изображения
 if isempty(Storage.centers_map)
     [Storage.centers_map(:,:,1),Storage.centers_map(:,:,2)] = meshgrid(1:size(Storage.image_1,1),1:size(Storage.image_1,2));
 end
 % Отображение векторного поля со стандартными параметрами
 [dv,do,di,dr2,dr3,ovm,ivm,r2vm,r3vm] = visual_vectors(Storage,ax,1.0,2.0,{'green','red','blue','magenta','cyan'});
 list_Graphics = list_Graphics + 5;
-% Расчёт графика линии (не отображется в начале)
+% Расчёт графика линии (не отображается в начале)
 streamslice(Storage.centers_map(:,:,1),Storage.centers_map(:,:,2),Storage.vectors_map(:,:,1),Storage.vectors_map(:,:,2),'Parent', ax);
 set(ax.Children(1:end-list_Graphics),'Color','none');
 
@@ -58,7 +57,7 @@ uidropdown(grid2,"Items",{colors{4},colors{1:3},colors{5:end}},"ValueChangedFcn"
 uilabel(grid2,HorizontalAlignment ='left',Text ='Replace_3nd');
 uidropdown(grid2,"Items",{colors{5},colors{1:4},colors{6:end}},"ValueChangedFcn",@(src,event) set(dr3,'Color',src.Value));
 
-% Позунок плотности векторного поля
+% Ползунок плотности векторного поля
 uilabel(grid2,HorizontalAlignment ='left',Text = sprintf('%s\n%s','Density'));
 density_slider = uislider(grid2,"Limits",[1,10],"MajorTicks",[1,2,3,4,5,7,10],"ValueChangedFcn",@(src,event) change_density(src,Storage,dv,ovm,do,ivm,di,r2vm,dr2,r3vm,dr3));
 
@@ -66,7 +65,7 @@ density_slider = uislider(grid2,"Limits",[1,10],"MajorTicks",[1,2,3,4,5,7,10],"V
 uilabel(grid2,HorizontalAlignment ='left',Text ='Scale');
 uislider(grid2,"Limits",[1,20],"MajorTicks",[1,5,10,15,20],"ValueChangedFcn",@(src,event) change_scale(src,Storage,round(density_slider.Value),dv,ovm,do,ivm,di,r2vm,dr2,r3vm,dr3));
 
-% Позунок толщины стрелки
+% Ползунок толщины стрелки
 uilabel(grid2,HorizontalAlignment ='left',Text ='Linewidth');
 uislider(grid2,"Limits",[0.1,5],"Value",2.0,"MajorTicks",[0.1,1,2,3,4,5],"ValueChangedFcn",@(src,event) change_linewidth(src,dv,do,di,dr2,dr3));
 
@@ -89,11 +88,11 @@ backgroundDrop.Layout.Row = 9; backgroundDrop.Layout.Column  = 2;
 uilabel(grid2,HorizontalAlignment ='left',Text ='Streamslice');
 uidropdown(grid2,"Items",{colors{end},colors{1:end-1}},"ValueChangedFcn",@(src,event) set(ax.Children(1:end-list_Graphics),'Color',src.Value));
 
-% Позунок толщины графика линий
+% Ползунок толщины графика линий
 uilabel(grid2,HorizontalAlignment ='left',Text = sprintf('%s\n%s','Streamslice','Linewidth'));
 uislider(grid2,"Limits",[0.1,5],"Value",1.0,"MajorTicks",[0.1,1,2,3,4,5],"ValueChangedFcn",@(src,event) set(ax.Children(1:end-list_Graphics),'LineWidth',src.Value));
 
-% Позунок плотности графика линий
+% Ползунок плотности графика линий
 uilabel(grid2,HorizontalAlignment ='left',Text = sprintf('%s\n%s','Streamslice','Density'));
 uislider(grid2,"Limits",[1,20],"MajorTicks",[1,5,10,15,20],"ValueChangedFcn",@(src,event) change_density_streamslice(src,Storage,list_Graphics,ax));
 
@@ -116,8 +115,8 @@ if src.Value
             % Поправка в 0.5 связанна с отрисовкой прямоугольников
             x0 = xc - round(w/2) + 0.5;
             y0 = yc - round(h/2) + 0.5;
-            % Визуализация маркеров
-            if (i == 1)||(j == 1)||(i == size_map(1))||(j == size_map(2)) % Граничные окна опроса подкрашены другим цветом
+            % Визуализация прямоугольников и маркеров
+            if (i == 1)||(j == 1)||(i == size_map(1))||(j == size_map(2)) % граничные окна опроса подкрашены другим цветом
                 rectangle('Position',[x0 y0 w h],'EdgeColor','red','LineWidth',2.0,'Parent', parent);
                 plot(xc,yc,'-s','MarkerFaceColor','red','MarkerEdgeColor','red','MarkerSize',5,'Parent', parent);
             else
@@ -126,7 +125,7 @@ if src.Value
             end
         end
     end
-else
+else % если убрана галочка, то удалить отрисованные прямоугольники и маркера
     size_prev = 2*size_map(1)*size_map(2);
     delete(parent.Children(1:size_prev));
 end
@@ -173,7 +172,7 @@ color = parent.Children(1).Color;
 linewidth = parent.Children(1).LineWidth;
 % Удаляем предыдущие 'Line'
 delete(parent.Children(1:size_prev));
-% Добовляем новые 'Line'
+% Добавляем новые 'Line'
 streamslice(Storage.centers_map(:,:,1),Storage.centers_map(:,:,2),Storage.vectors_map(:,:,1),Storage.vectors_map(:,:,2),src.Value,'Parent', parent);
 % Устанавливаем параметры предыдущего streamslice
 set(parent.Children(1:end-list_Graphics),'Color',color);
@@ -271,7 +270,7 @@ function [dv,do,di,dr2,dr3,outliers_vectors_map,interpolate_vectors_map,replace_
 
 [H,W] = size(Storage.vectors_map,1:2);
 
-% Инициализация и запись масок выбросов и замен
+% Инициализация и запись векторов из масок выбросов и замен
 outliers_vectors_map = zeros(H,W,2);
 for i = 1:H
     for j = 1:W

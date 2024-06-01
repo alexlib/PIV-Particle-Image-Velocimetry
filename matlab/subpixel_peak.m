@@ -1,27 +1,27 @@
 function subpixel_peak(Storage,varargin)
-%subpixel_peak Субпикселульное уточнение величины смещения
-%   Возможно выбрать метод апроксимации корреляционного пика
+%subpixel_peak Субпиксельное уточнение величины смещения
+%   Возможно выбрать метод аппроксимации корреляционного пика
 
-% Определиние параметров по умолчанию
+% Параметры по умолчанию
 eps = 2; % добавка для исключения log(0)
 method = 'gaussian';
 
-% Парсер заданных параметов
+% Парсер заданных параметров
 k = 2;
 while k <= size(varargin,2)
     switch varargin{k-1}
         case 'method'
             method = varargin{k};
         otherwise
-            error('Указан неизвестный параметр');
+            error('Указан неизвестный метод');
     end
     k = k + 2;
 end
 
-% Удаление последнего прохода и добавка постоянной сотовляющей к корреляционной карте
+% Удаление последнего прохода и добавка постоянной составляющей к корреляционной карте
 Storage.vectors_map = Storage.vectors_map - Storage.vectors_map_last_pass;
 
-% Апроксимация
+% Аппроксимация
 [H,W] = size(Storage.vectors_map_last_pass,1:2);
 for i = 1:H
     for j = 1:W
@@ -29,7 +29,7 @@ for i = 1:H
         if (Storage.replaces_map(i,j) == 0) || (Storage.replaces_map(i,j) > 1)
             x_peak = Storage.vectors_map_last_pass(i,j,1) + Storage.window_size(2);
             y_peak = Storage.vectors_map_last_pass(i,j,2) + Storage.window_size(1);
-            % Проверка на граничные значения
+            % Проверка на граничные значения (границы не обрабатываются)
             if ((x_peak == 1)||(y_peak == 1)||(x_peak == 2*Storage.window_size(2)-1)||(y_peak == 2*Storage.window_size(1)-1))
                 Storage.vectors_map(i,j,:) = Storage.vectors_map(i,j,:) + Storage.vectors_map_last_pass(i,j,:);
             else
@@ -62,7 +62,7 @@ for i = 1:H
     end
 end
 
-% Запись результирующего вектороного поля и возвращение исходной корреляционной карты
+% Запись результирующего векторного поля и возвращение исходной корреляционной карты
 Storage.vectors_map = Storage.vectors_map + Storage.vectors_map_last_pass;
 for i = 1:H
     for j = 1:W

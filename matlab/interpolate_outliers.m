@@ -2,10 +2,10 @@ function interpolate_outliers(Storage,varargin)
 %interpolate_outliers Замена выбросов медианным значение окрестности
 %   Возможно задать размер окрестности
 
-% Определиние параметров по умолчанию
-r = 2; % Радиус окрестности центральной точки (обычно устанавливается равным 1 или 2)
+% Параметры по умолчанию
+r = 2; % радиус окрестности
 
-% Парсер заданных параметов
+% Парсер заданных параметров
 k = 2;
 while k <= size(varargin,2)
     switch varargin{k-1}
@@ -17,7 +17,7 @@ while k <= size(varargin,2)
     k = k + 2;
 end
 
-% Перевод маски выбросов Storage.outliers_map в вектор координат
+% Перевод маски выбросов в вектор координат
 [H,W] = size(Storage.outliers_map);
 outliers_vector = [];
 number_outliers = 0;
@@ -31,17 +31,17 @@ for i = 1:H
 end
 
 % Интерполяция всех выбросов
-while number_outliers > 0
+while number_outliers > 0 % повторяем интерполяцию до тех пор, пока все вектора не пройдут проверку
     interpolate(Storage,outliers_vector,H,W,r);
     % Проверка интерполированных значений на выброс
     n = 1;
     while n <= number_outliers
         i = outliers_vector(n,1);
         j = outliers_vector(n,2);
-        if validate_outliers(Storage,'single',[i,j])
-            % Повторная интерполяция на следущей итерации, в случае соседей выбросов, которые будут заменены
+        if validate_outliers(Storage,'single',[i,j]) % проверка на выброс после интерполяции
+            % Если вектор остался выбросом после интерполяции
             n = n + 1;
-        else % Исключение из вектора координат успешно интерполированного выброса
+        else % исключение из вектора координат успешно интерполированного выброса
             outliers_vector(n,:) = [];
             Storage.outliers_map(i,j) = 0;
             Storage.replaces_map(i,j) = 1;
