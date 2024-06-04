@@ -1,6 +1,10 @@
 function subpixel_peak(Storage,varargin)
 %subpixel_peak Субпиксельное уточнение величины смещения
-%   Возможно выбрать метод аппроксимации корреляционного пика
+%   Возможно выбрать метод аппроксимации корреляционного пика.
+%   Интерполированные вектора не обрабатываются. Если есть желание
+%   использовать этот метод на не целые значения векторного поля, например,
+%   после сглаживания векторного поля (smoothing), то необходимо округлять
+%   до целого значения смещения (x_peak,y_peak)
 
 % Параметры по умолчанию
 eps = 2; % добавка для исключения log(0)
@@ -26,7 +30,7 @@ Storage.vectors_map = Storage.vectors_map - Storage.vectors_map_last_pass;
 for i = 1:H
     for j = 1:W
         Storage.correlation_maps{i,j}(:,:) = Storage.correlation_maps{i,j}(:,:) + eps;
-        if (Storage.replaces_map(i,j) == 0) || (Storage.replaces_map(i,j) > 1)
+        if (Storage.replaces_map(i,j) == 0) || (Storage.replaces_map(i,j) > 1) % интерполированные вектора не обрабатываются
             x_peak = Storage.vectors_map_last_pass(i,j,1) + Storage.window_size(2);
             y_peak = Storage.vectors_map_last_pass(i,j,2) + Storage.window_size(1);
             % Проверка на граничные значения (границы не обрабатываются)
