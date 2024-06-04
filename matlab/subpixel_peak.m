@@ -7,8 +7,8 @@ function subpixel_peak(Storage,varargin)
 %   до целого значения смещения (x_peak,y_peak)
 
 % Параметры по умолчанию
-eps = 2; % добавка для исключения log(0)
-method = 'gaussian';
+eps = 0.1; % добавка для исключения log(0)
+method = 'centroid';
 
 % Парсер заданных параметров
 k = 2;
