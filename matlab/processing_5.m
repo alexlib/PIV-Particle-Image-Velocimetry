@@ -18,7 +18,7 @@ validate_outliers(Storage);
 interpolate_outliers(Storage);
 smoothing(Storage);
 
-pass(Storage,[8,8],[4,4],'type_pass','next','deform','symmetric');
+pass(Storage,[8,8],[4,4],'type_pass','next','double_corr','xy','deform','symmetric');
 validate_outliers(Storage);
 interpolate_outliers(Storage);
 subpixel_peak(Storage);
