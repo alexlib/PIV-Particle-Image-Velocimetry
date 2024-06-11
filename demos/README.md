@@ -11,11 +11,11 @@
 второе вектору смещения с максимальным отклонением от истинного (максимум отклонения):
 
 <p float="left">
-<img src="demos/MSD.png" width="500" />
+<img src="/demos/MSD.png" width="500" />
 </p>
 
 <p float="left">
-<img src="demos/Max.png" width="500" /> 
+<img src="/demos/Max.png" width="500" /> 
 </p>
 
 Больше информации о датасете содержится в [магистерской работе
