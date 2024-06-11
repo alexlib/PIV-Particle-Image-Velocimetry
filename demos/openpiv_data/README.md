@@ -1,2 +1,7 @@
-# PIV-Particle-Image-Velocimetry
-displacement images using cross-correlation
+# Пример обработки из OpenPIV
+Параметры обработки в **OpenPIV** использовались стандартные, [предложенные в
+примере](https://openpiv.readthedocs.io/en/latest/src/windef.html), только задавались размеры окон опроса и
+наложения **32, 16, 8** и **16, 8, 4** пикселей соответственно
+(`settings.windowsizes(32,16,8)` и `settings.overlap(16,8,4)`).
+Визуализация как из ***python***, так и из ***Matlab*** представлена для
+качественного сравнения результатов с результатами обработки текущего проекта.
