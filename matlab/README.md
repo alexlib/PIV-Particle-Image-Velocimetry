@@ -32,7 +32,7 @@
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`2` – замена 2-м корреляционным пиком <br>
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`3` – замена 3-м корреляционным пиком <br>
 `correlation_maps` – коллекция хранящая корреляционный карты <br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`corr_map = correlation_maps{i, j}` <br>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`corr_map = correlation_maps{i, j}` <br>
 `vectors_map_last_pass` – векторное поле последнего прохода <br>
 
 **2.** `load_images(Storage, image_address_1, image_address_2)` <br>
