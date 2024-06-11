@@ -12,6 +12,7 @@
 
 <p float="left">
 <img src="/demos/MSD.png" width="500" />
+<img src="/demos/Max.png" width="500" /> 
 </p>
 
 <p float="left">
