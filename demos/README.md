@@ -12,7 +12,7 @@
 
 <p float="left">
 <img src="/demos/MSD.png" width="500" />
-<img src="/demos/Max.png" width="487" /> 
+<img src="/demos/Max.png" width="486" /> 
 </p>
 
 Больше информации о датасете содержится в [магистерской работе
