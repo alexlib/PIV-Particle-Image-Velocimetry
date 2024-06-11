@@ -18,21 +18,21 @@
 `window_size` – размер окна опроса `[height, width]` <br>
 `overlap` – величина наложения окон опроса `[height, width]` <br>
 `centers_map` – матрица центров окон опроса на первом изображении <br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`X = centers_map( : , : ,1)`; (столбцы `j`) <br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`Y = centers_map( : , : ,2)`; (строки `i`) <br>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`X = centers_map( : , : ,1)`; (столбцы `j`) <br>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`Y = centers_map( : , : ,2)`; (строки `i`) <br>
 `vectors_map` – векторное поле <br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`U = vectors_map( : , : ,1)` <br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`V = vectors_map( : , : ,2)` <br>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`U = vectors_map( : , : ,1)` <br>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`V = vectors_map( : , : ,2)` <br>
 `outliers_map` – маска выбросов <br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`0` – выброс отсутствует <br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`1` – выброс <br>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`0` – выброс отсутствует <br>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`1` – выброс <br>
 `replaces_map` – маска замещенных векторов <br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`0` – вектор не замещен <br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`1` – интерполирован <br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`2` – замена 2-м корреляционным пиком <br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`3` – замена 3-м корреляционным пиком <br>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`0` – вектор не замещен <br>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`1` – интерполирован <br>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`2` – замена 2-м корреляционным пиком <br>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`3` – замена 3-м корреляционным пиком <br>
 `correlation_maps` – коллекция хранящая корреляционный карты <br>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`corr_map = correlation_maps{i, j}` <br>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;`corr_map = correlation_maps{i, j}` <br>
 `vectors_map_last_pass` – векторное поле последнего прохода <br>
 
 **2.** `load_images(Storage, image_address_1, image_address_2)` <br>
@@ -48,12 +48,11 @@
 Расчет векторного поля кросскорреляционным методом. В зависимости от
 заданных параметров может работать, как проход для получения первичного
 векторного поля, так и проход для уточнения существующего векторного поля. <br>
-`varargin`: <br>
->`‘type_pass’` – тип прохода <br>
- `type_pass` = `‘first’` или `‘next’` <br>
 
->`‘double_corr’` = `true/false` – перемножение соседних корреляционных карт <br>
- `direct` = `‘x’`, `‘y’`, `‘xy’`, `‘center’` – метод перемножение <br>
+| `varargin`                                                                                                                                       |
+|:-------------------------------------------------------------------------------------------------------------------------------------------------|
+| `‘type_pass’` – тип прохода <br> `type_pass` = `‘first’` или `‘next’`                                                                            |
+| `‘double_corr’` = `true/false` – перемножение соседних корреляционных карт <br> `direct` = `‘x’`, `‘y’`, `‘xy’`, `‘center’` – метод перемножение |
 
 >`‘restriction’` = `true/false` – ограничение области поиска корреляционного пика <br>
  `restriction_area` = `‘1/4’`, `‘1/3’`, `‘1/2’` – величина ограничения от размера окна <br>
