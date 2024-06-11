@@ -10,8 +10,8 @@
 >**matlab**: код проекта, описание методов и функциональная схем
 
 ## Запуск
-Пример запуска проекта находится в скрипте [main](matlab/main.m).
-Описание модулей в [readme каталога matlab](matlab/README.md).
+Пример запуска проекта находится в скрипте [main](/matlab/main.m).
+Описание модулей в [readme каталога matlab](/matlab/README.md).
 В `main` приведены примеры различных сценариев обработки.
 В зависимости от задачи можно индивидуально собирать процесс
 обработки (сценарий) для формирования оптимального решения.
@@ -28,24 +28,24 @@
 проект изначально предполагалось не только для измерения потоков
 
 <p float="left">
-<img src="demos/VortexPair.gif" width="300" />
-<img src="demos/example_1.png" width="300" />
+<img src="/demos/VortexPair.gif" width="300" />
+<img src="/demos/example_1.png" width="300" />
 </p>
 
 но и для задач стереозрения. Изображения для задачи стереозрения получены на
 [стенде, имитирующем деформацию поверхности крыла летательного аппарата](https://github.com/Stergrim/Recalibration-of-a-stereo-pair-based-on-a-reprojection-error/tree/main)
-(или из [магистерской работы страница 74 рисунок 36](demos/DiplomMaster.pdf)).
+(или из [магистерской работы страница 74 рисунок 36](/demos/DiplomMaster.pdf)).
 
 <p float="left">
-<img src="demos/SheetSurface.gif" width="300" />
-<img src="demos/example_2.png" width="340" /> 
+<img src="/demos/SheetSurface.gif" width="300" />
+<img src="/demos/example_2.png" width="340" /> 
 </p>
 
 Для удобной визуализации результатов написан простой пользовательский интерфейс
-[show](matlab/show.m) с различными параметрами отображения
+[show](/matlab/show.m) с различными параметрами отображения
 
 <p float="left">
-<img src="demos/example_3.png" width="640" />
+<img src="/demos/example_3.png" width="640" />
 </p>
 
 Достигнуть точность сравнимой с **OpenPIV** возможно, если переработать
@@ -55,12 +55,12 @@
 понимания процесса обработки в проекте. Возможно относительная простота и
 модульность проекта позволит использовать его в качестве не только основы
 (скелета) для других решений, но и в образовательных целях. <br>
-Пример точности **OpenPIV** приведен в скрипте [test_processing](matlab/test_processing.m)
-в переменных `mean_target` и `max_target`. Также в каталоге [openpiv_data](demos/openpiv_data)
+Пример точности **OpenPIV** приведен в скрипте [test_processing](/matlab/test_processing.m)
+в переменных `mean_target` и `max_target`. Также в каталоге [openpiv_data](/demos/openpiv_data)
 есть примеры обработки **OpenPIV** с визуализацией как из python,
 так и из ***Matlab***. Обработка осуществлена 3-ёх проходным методом с деформацией
 окна опроса с размерами окон опроса **32, 16, 8** пикселей. <br>
-В [readme каталога demos](demos/README.md) приведено сравнение точности
+В [readme каталога demos](/demos/README.md) приведено сравнение точности
 для 5-ти различных сценариев на примере [датасета для PIV](https://github.com/abrosua/cai-piv_dataset).
 
 ## Замечания
