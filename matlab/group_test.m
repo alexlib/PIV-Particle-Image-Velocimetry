@@ -5,7 +5,7 @@ clear Storage
 Storage = Storage();
 
 % Определение каталога с данными и формата изображения
-folder_address = 'demos/group_test';
+folder_address = '.../demos/group_test';
 image_format = '*.tif';
 
 % Определение набора сценариев для расчета
