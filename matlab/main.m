@@ -6,7 +6,7 @@
 clear Storage
 Storage = Storage();
 
-load_images(Storage,'demos/SQG_00001_img1.tif','demos/SQG_00001_img2.tif');
+load_images(Storage,'.../demos/SQG_00001_img1.tif','.../demos/SQG_00001_img2.tif');
 preprocessing(Storage);
 
 pass(Storage,[32,32],[16,16],'type_pass','first','restriction','1/2');
@@ -32,7 +32,7 @@ show(Storage);
 % clear Storage
 % Storage = Storage();
 % 
-% load_images(Storage,'demos/backstep_Re800_00007_img1.tif','demos/backstep_Re800_00007_img2.tif');
+% load_images(Storage,'.../demos/backstep_Re800_00007_img1.tif','.../demos/backstep_Re800_00007_img2.tif');
 % preprocessing(Storage);
 % 
 % pass(Storage,[36,31],[11,17],'type_pass','first','double_corr','center','restriction','1/3');
@@ -64,7 +64,7 @@ show(Storage);
 % clear Storage
 % Storage = Storage();
 % 
-% load_images(Storage,'demos/VortexPair_1.tif','demos/VortexPair_2.tif');
+% load_images(Storage,'.../demos/VortexPair_1.tif','.../demos/VortexPair_2.tif');
 % preprocessing(Storage);
 % 
 % pass(Storage,[48,48],[32,32],'type_pass','first');
