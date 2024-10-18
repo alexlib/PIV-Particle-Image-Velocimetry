@@ -1,15 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from PySide2.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QComboBox, QLabel, QGridLayout
-from PySide2.QtCore import Qt
+from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QComboBox, QLabel, QGridLayout
+from PySide6.QtCore import Qt
+from Storage import Storage
 
-class Storage:
-    def __init__(self):
-        self.image_1 = np.random.rand(100, 100) * 255
-        self.image_2 = np.random.rand(100, 100) * 255
-        self.centers_map = None
-        self.vectors_map = np.random.rand(100, 100, 2) * 10
 
 def visual_vectors(Storage, ax, scale, width, colors):
     # Placeholder for the visual_vectors function
@@ -89,7 +84,7 @@ def show(Storage):
     app = QApplication([])
     visualizer = Visualizer(Storage)
     visualizer.show()
-    app.exec_()
+    app.exec()
 
 # Example usage
 storage = Storage()

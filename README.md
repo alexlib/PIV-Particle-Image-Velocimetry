@@ -1,76 +1,25 @@
-# Цифровая трассерная визуализация <br> (PIV – Particle image velocimetry)
-В репозитории представлена реализация метода кросскорреляции для определения
-локальных смещений оптического потока. Основная область применения – это измерения
-жидких и газообразных потоков (PIV), измерения деформации твердых тел
-(Digital Image Correlation) и восстановление 3d-формы поверхности объекта при
-стереосъемке (стереозрение).
 
-## Каталоги в этом репозитории
->**demos**: демонстрация проекта на примерах и результаты измерения точности <br>
->**matlab**: код проекта, описание методов и функциональная схема
+# Digital Particle Image Velocimetry (PIV)
 
-## Запуск
-Пример запуска проекта находится в скрипте [main](/matlab/main.m).
-Описание модулей в [readme каталога matlab](/matlab/README.md).
-В `main` приведены примеры различных сценариев обработки.
-В зависимости от задачи можно индивидуально собирать процесс
-обработки (сценарий) для формирования оптимального решения.
+This repository presents the implementation of the cross-correlation method for determining local displacements of optical flow. The main application areas are the measurement of liquid and gaseous flows (PIV), measurement of solid body deformations (Digital Image Correlation), and reconstruction of the 3D shape of an object's surface during stereoscopic imaging (stereovision).
 
-## Описание проекта
-Основная идея этого проекта – это создание модульной основы (скелета)
-для разработки собственных решений на основе метода кросскорреляционной
-обработки. Текущая реализация уступает в точности проекту [**OpenPIV**](https://openpiv.readthedocs.io/en/latest/index.html),
-но имеет более гибкую настройку. **OpenPIV** ограничен размерами окон опроса
-степени **2** и не позволяет настраивать отдельно параметры на каждой итерации.
-Возможно в большинстве приложений не требуется большего, но текущий проект
-предлагает большую свободу в настройки сценария обработки как в
-размерах окон опроса, так и в параметрах на каждой итерации. <br>
-Применять проект изначально предполагалось не только для измерения потоков
+Directories in this Repository
+demos: project demonstration with examples and accuracy measurement results <br> matlab: project code, method descriptions, and functional diagram
 
-<p float="left">
-<img src="/demos/VortexPair.gif" width="300" />
-<img src="/demos/example_1.png" width="300" />
-</p>
+## Running the Project
+An example of running the project can be found in the script main. Module descriptions are in the README of the matlab directory. The main script provides examples of various processing scenarios. Depending on the task, the processing workflow (scenario) can be individually assembled to form the optimal solution.
 
-но и для задач стереозрения. Изображения для задачи стереозрения получены на
-[стенде, имитирующем деформацию поверхности крыла летательного аппарата](https://github.com/Stergrim/Recalibration-of-a-stereo-pair-based-on-a-reprojection-error/tree/main)
-(или из [магистерской работы страница 74 рисунок 36](/demos/DiplomMaster.pdf)).
+## Project Description
+The main idea of this project is to create a modular foundation (skeleton) for developing custom solutions based on the cross-correlation processing method. The current implementation is less accurate than the OpenPIV project but offers more flexible configuration. OpenPIV is limited to interrogation window sizes of powers of 2 and does not allow separate parameter settings for each iteration. While this may be sufficient for most applications, the current project offers greater freedom in configuring the processing scenario, both in terms of interrogation window sizes and parameters for each iteration.
 
-<p float="left">
-<img src="/demos/SheetSurface.gif" width="300" />
-<img src="/demos/example_2.png" width="340" /> 
-</p>
+<p float="left"> <img src="/demos/VortexPair.gif" width="300" /> <img src="/demos/example_1.png" width="300" /> </p>
+The project was initially intended not only for flow measurements but also for stereovision tasks. Images for the stereovision task were obtained on a stand simulating the deformation of an aircraft wing surface (or from the master's thesis, page 74, figure 36).
 
-Для удобной визуализации результатов написан простой пользовательский интерфейс
-[show](/matlab/show.m) с различными параметрами отображения
+<p float="left"> <img src="/demos/SheetSurface.gif" width="300" /> <img src="/demos/example_2.png" width="340" /> </p>
+For convenient visualization of results, a simple user interface show with various display parameters was written.
 
-<p float="left">
-<img src="/demos/example_3.png" width="640" />
-</p>
+<p float="left"> <img src="/demos/example_3.png" width="640" /> </p>
+Achieving accuracy comparable to OpenPIV is possible if the modules resize(multigrid), deform_images(deform), validate_outliers, interpolate, and smoothing are reworked. These methods use simple processing based on built-in functions in Matlab. This was done to simplify the understanding of the processing process in the project. The relative simplicity and modularity of the project may allow it to be used not only as a foundation (skeleton) for other solutions but also for educational purposes. An example of OpenPIV accuracy is provided in the script test_processing in the variables mean_target and max_target. Also, in the openpiv_data directory, there are examples of OpenPIV processing with visualization from both python and Matlab. The processing was carried out using a three-pass method with interrogation window deformation with window sizes of 32, 16, 8 pixels. In the README of the demos directory, a comparison of accuracy for 5 different scenarios is provided using the PIV dataset.
 
-Достигнуть точность сравнимой с **OpenPIV** возможно, если переработать
-модули `resize`(`multigrid`), `deform_images`(`deform`), `validate_outliers`,
-`interpolate` и `smoothing`. В этих методах используется простые обработки на
-основе встроенных функций в ***Matlab***. Это сделано с целью более простого
-понимания процесса обработки в проекте. Возможно относительная простота и
-модульность проекта позволит использовать его в качестве не только основы
-(скелета) для других решений, но и в образовательных целях. <br>
-Пример точности **OpenPIV** приведен в скрипте [test_processing](/matlab/test_processing.m)
-в переменных `mean_target` и `max_target`. Также в каталоге [openpiv_data](/demos/openpiv_data)
-есть примеры обработки **OpenPIV** с визуализацией как из ***python***,
-так и из ***Matlab***. Обработка осуществлена 3-ёх проходным методом с деформацией
-окна опроса с размерами окон опроса **32, 16, 8** пикселей. <br>
-В [readme каталога demos](/demos/README.md) приведено сравнение точности
-для 5-ти различных сценариев на примере [датасета для PIV](https://github.com/abrosua/cai-piv_dataset).
-
-## Замечания
-Этот проект не отличается высокой надежностью. Добиться ошибки выполнения довольно
-просто, например, после метода `smoothing` поставить `subpixel_peak`, т.к.
-`subpixel_peak` не обрабатывает дробные смещения, или в методе `pass` на первом
-проходе задать параметр `‘type_pass’ = ‘next’` и тому подобное. Проектом можно
-пользоваться как готовой программой, но в первую очередь он рассчитан на программистов,
-которые могут использовать его как основу для разработки собственных решений. <br>
-По поводу обработки границ изображения. Отказался от расширения изображения для
-расчета векторов до границы. На данный момент ближайший вектор к границе
-находится на расстоянии половины окна опроса последнего прохода. <br>
-Буду рад аргументированной критике и советам по улучшению проекта.
+###  Notes
+This project is not highly reliable. It is quite easy to cause an execution error, for example, by placing subpixel_peak after the smoothing method, as subpixel_peak does not process fractional displacements, or by setting the parameter ‘type_pass’ = ‘next’ in the pass method on the first pass, and so on. The project can be used as a ready-made program, but it is primarily intended for programmers who can use it as a foundation for developing their own solutions. Regarding image border processing, I decided not to extend the image for vector calculation to the border. Currently, the nearest vector to the border is at a distance of half the interrogation window of the last pass. I would appreciate reasoned criticism and advice on improving the project.
