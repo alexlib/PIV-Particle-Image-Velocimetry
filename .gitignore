@@ -9,3 +9,4 @@ src/__pycache__/smoothing.cpython-312.pyc
 src/__pycache__/Storage.cpython-312.pyc
 src/__pycache__/subpixel_peak.cpython-312.pyc
 src/__pycache__/validate_outliers.cpython-312.pyc
+.vscode/launch.json

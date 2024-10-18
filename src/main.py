@@ -12,11 +12,17 @@ from replace_outliers_next_peak import replace_outliers_next_peak
 from interpolate_outliers import interpolate_outliers
 from subpixel_peak import subpixel_peak
 from smoothing import smoothing
-from show import show
+import os
+# from show import show
 
 
 # Example scenario
 storage = Storage()
+
+# Check if the current working directory is '/src', if not, change to '/src'
+current_dir = os.getcwd()
+if not current_dir.endswith('/src'):
+    os.chdir('/home/user/Documents/repos/PIV-Particle-Image-Velocimetry/src')
 
 load_images(storage, '../demos/SQG_00001_img1.tif', '../demos/SQG_00001_img2.tif')
 preprocessing(storage)
@@ -36,7 +42,7 @@ validate_outliers(storage, 'radius', 1, 'threshold', 0.5)
 interpolate_outliers(storage, 'radius', 1)
 subpixel_peak(storage)
 
-show(storage)
+# show(storage)
 
 # Three-pass maximally loaded scenario (commented out)
 # storage = Storage()
