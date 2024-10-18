@@ -1,4 +1,11 @@
+from images_split import images_split
+from deform_images import deform_images
+from resize_field import resize_field
+from cross_correlate import cross_correlate
+from double_correlate import double_correlate
+from search_peak import search_peak
 import numpy as np
+
 
 def pass_function(Storage, window_size, overlap, *args):
     """
@@ -48,7 +55,51 @@ def pass_function(Storage, window_size, overlap, *args):
         k += 2
 
     # The rest of the function implementation goes here
-    # ...
+    """
+    pass_function Calculation of the vector field by the cross-correlation method
+    Performs cross-correlation of local areas (interrogation windows) on a pair
+    of images. Depending on the specified parameters, it can work as
+    a pass to obtain the primary vector field, or as a pass to
+    refine the existing vector field.
+    """
+    
+    # Check for changes in window size and overlap
+    multigrid = type_pass != 'first' and (not np.array_equal(Storage.window_size, window_size) or not np.array_equal(Storage.overlap, overlap))
+
+    # Record new window sizes and overlap
+    Storage.window_size = window_size
+    Storage.overlap = overlap
+
+    # Form coordinates of interrogation windows on the first image
+    X0, Y0 = images_split(Storage, type_pass, multigrid, borders)
+
+    # Size of the new vector field
+    size_map = X0.shape
+
+    # Deform images
+    if deform:
+        deform_images(Storage, deform_type)
+
+    # Scale the vector field (multigrid)
+    if multigrid:
+        resize_field(Storage, size_map)
+
+    # Calculate correlation maps
+    cross_correlate(Storage, size_map, X0, Y0, type_pass, deform, double_corr)
+
+    # Multiply neighboring correlation maps
+    if double_corr:
+        double_correlate(Storage, direct)
+
+    # Search for the correlation peak
+    search_peak(Storage, size_map, restriction, restriction_area)
+
+    # Record the resulting vector field
+    if type_pass == 'first':
+        Storage.vectors_map = Storage.vectors_map_last_pass
+    else:
+        Storage.vectors_map += Storage.vectors_map_last_pass
 
 # Example usage
-# pass_function(Storage, window_size, overlap, 'type_pass', 'next', 'double_corr', 'y', 'restriction', '1/3', 'deform', 'asymmetric', 'borders', False)
+# storage = Storage()
+# pass_function(storage, [32, 32], [16, 16], type_pass='first', double_corr=True, direct='x', restriction=True, restriction_area=0.5, deform=True, deform_type='symmetric', borders=True)

@@ -1,6 +1,5 @@
 import numpy as np
 from scipy.signal import correlate2d
-from storage import Storage
 
 def cross_correlate(Storage, size_map, X0, Y0, type_pass, deform, double_corr):
     """
@@ -43,18 +42,18 @@ def correlate(Storage, i, j, X0, Y0, double_corr, offset=False, validate_borders
     """
     
     # Default parameters
-    x_start = X0[i, j]
-    x_end = X0[i, j] + Storage.window_size[1] - 1
-    y_start = Y0[i, j]
-    y_end = Y0[i, j] + Storage.window_size[0] - 1
+    x_start = int(X0[i, j])
+    x_end = int(X0[i, j] + Storage.window_size[1] - 1)
+    y_start = int(Y0[i, j])
+    y_end = int(Y0[i, j] + Storage.window_size[0] - 1)
 
     # Placeholder for the actual correlation logic
     # This should include extracting the interrogation windows and performing cross-correlation
     # For example:
-    # window_1 = Storage.image_1[y_start:y_end+1, x_start:x_end+1]
-    # window_2 = Storage.image_2[y_start:y_end+1, x_start:x_end+1]
-    # correlation_map = correlate2d(window_1, window_2, mode='full')
-    # Storage.correlation_maps[i, j] = correlation_map
+    window_1 = Storage.image_1[y_start:y_end+1, x_start:x_end+1]
+    window_2 = Storage.image_2[y_start:y_end+1, x_start:x_end+1]
+    correlation_map = correlate2d(window_1, window_2, mode='full')
+    Storage.correlation_maps[i, j] = correlation_map
 
 # Example usage
 # storage = Storage(window_size=(32, 32))

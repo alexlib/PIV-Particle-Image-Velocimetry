@@ -9,8 +9,10 @@ def images_split(Storage, type_pass, multigrid, borders):
     if type_pass == 'first' or multigrid:  # calculate the coordinates of the interrogation windows
         image_size = Storage.image_1.shape
         
+        image_size = np.array(image_size)
+        window_size = np.array(Storage.window_size)
         # Number of interrogation windows horizontally and vertically
-        field_shape = np.floor((image_size - Storage.window_size) / (Storage.window_size - Storage.overlap)) + 1
+        field_shape = np.floor((image_size - window_size) / (window_size - Storage.overlap)) + 1
         
         # Size of the area covered by the interrogation windows
         w = field_shape[1] * (Storage.window_size[1] - Storage.overlap[1]) + Storage.overlap[1]

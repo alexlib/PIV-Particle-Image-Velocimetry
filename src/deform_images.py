@@ -1,7 +1,6 @@
-import numpy as np
 from skimage.transform import resize, warp
 from scipy.ndimage import map_coordinates
-from storage import Storage
+import numpy as np
 
 
 def deform_images(Storage, deform_type):

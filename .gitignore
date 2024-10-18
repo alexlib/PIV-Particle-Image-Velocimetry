@@ -10,3 +10,9 @@ src/__pycache__/Storage.cpython-312.pyc
 src/__pycache__/subpixel_peak.cpython-312.pyc
 src/__pycache__/validate_outliers.cpython-312.pyc
 .vscode/launch.json
+src/__pycache__/cross_correlate.cpython-312.pyc
+src/__pycache__/deform_images.cpython-312.pyc
+src/__pycache__/double_correlate.cpython-312.pyc
+src/__pycache__/images_split.cpython-312.pyc
+src/__pycache__/resize_field.cpython-312.pyc
+src/__pycache__/search_peak.cpython-312.pyc

@@ -1,5 +1,3 @@
-import numpy as np
-
 class Storage:
     """
     Storage Data storage class for processing

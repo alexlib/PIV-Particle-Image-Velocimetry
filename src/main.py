@@ -1,7 +1,3 @@
-import numpy as np
-from skimage import io
-from skimage.color import rgb2gray
-import matplotlib.pyplot as plt
 from Storage import Storage
 from load_images import load_images
 from preprocessing import preprocessing
