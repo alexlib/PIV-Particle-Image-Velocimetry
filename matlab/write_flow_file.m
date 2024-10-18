@@ -1,74 +1,51 @@
-function write_flow_file(Storage, filename,varargin)
-%write_flow_file Запись векторной карты в .flo файл
-%   Записывает данные из класса Storage. Возможно масштабирование векторной карты
+import numpy as np
+from skimage.transform import resize
 
-% Код взят с Github: https://github.com/seungryong/FCSS
-% @InProceedings{kim2017,
-% author = {Seungryong Kim and Dongbo Min and Bumsub Ham and Sangryul Jeon and Stephen Lin and Kwanghoon Sohn},
-% title = {FCSS: Fully Convolutional Self-Similarity for Dense Semantic Correspondence},
-% booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), IEEE},
-% year = {2017}}
+def write_flow_file(Storage, filename, *args):
+    """
+    write_flow_file Write vector map to .flo file
+    Writes data from the Storage class. Vector map scaling is possible.
 
-% Параметры по умолчанию
-scaling = false;
+    Code taken from Github: https://github.com/seungryong/FCSS
+    @InProceedings{kim2017,
+    author = {Seungryong Kim and Dongbo Min and Bumsub Ham and Sangryul Jeon and Stephen Lin and Kwanghoon Sohn},
+    title = {FCSS: Fully Convolutional Self-Similarity for Dense Semantic Correspondence},
+    booktitle = {Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), IEEE},
+    year = {2017}}
+    """
+    
+    # Default parameters
+    scaling = False
 
-% Парсер заданных параметров
-k = 1;
-while k <= size(varargin,2)
-    switch varargin{k}
-        case 'scaling'
-            scaling = true;
-        otherwise
-            error('Указан неправильный параметр')
-    end
-    k = k + 1;
-end
+    # Parameter parser
+    k = 0
+    while k < len(args):
+        if args[k] == 'scaling':
+            scaling = True
+        else:
+            raise ValueError('Incorrect parameter specified')
+        k += 1
 
-% Масштабирование векторного поля до размера изображения
-if scaling, Storage.vectors_map = imresize(Storage.vectors_map,size(Storage.image_1),'bilinear'); end
+    # Scale the vector field to the image size
+    if scaling:
+        Storage.vectors_map = resize(Storage.vectors_map, (Storage.image_1.shape[0], Storage.image_1.shape[1]), mode='reflect', anti_aliasing=True)
 
-TAG_STRING = 'PIEH';    % use this when WRITING the file
+    TAG_STRING = 'PIEH'  # use this when WRITING the file
 
-% sanity check
-if isempty(filename) == 1
-    error('writeFlowFile: empty filename');
-end
+    # Sanity check
+    if not filename:
+        raise ValueError('writeFlowFile: empty filename')
 
-idx = strfind(filename, '.');
-idx = idx(end);             % in case './xxx/xxx.flo'
+    idx = filename.rfind('.')
+    if idx == -1 or filename[idx:] != '.flo':
+        raise ValueError(f'writeFlowFile: extension required in filename {filename}')
 
-if length(filename(idx:end)) == 1
-    error('writeFlowFile: extension required in filename %s', filename);
-end
+    # Write the .flo file
+    with open(filename, 'wb') as f:
+        f.write(TAG_STRING.encode('utf-8'))
+        np.array(Storage.vectors_map.shape[1], dtype=np.int32).tofile(f)
+        np.array(Storage.vectors_map.shape[0], dtype=np.int32).tofile(f)
+        Storage.vectors_map.astype(np.float32).tofile(f)
 
-if strcmp(filename(idx:end), '.flo') ~= 1    
-    error('writeFlowFile: filename %s should have extension ''.flo''', filename);
-end
-
-[height,width,nBands] = size(Storage.vectors_map);
-
-if nBands ~= 2
-    error('writeFlowFile: image must have two bands');    
-end
-
-fid = fopen(filename, 'w');
-if (fid < 0)
-    error('writeFlowFile: could not open %s', filename);
-end
-
-% write the header
-fwrite(fid, TAG_STRING); 
-fwrite(fid, width, 'int32');
-fwrite(fid, height, 'int32');
-
-% arrange into matrix form
-tmp = zeros(height, width*nBands);
-
-tmp(:, (1:width)*nBands-1) = Storage.vectors_map(:,:,1);
-tmp(:, (1:width)*nBands) = squeeze(Storage.vectors_map(:,:,2));
-tmp = tmp';
-
-fwrite(fid, tmp, 'float32');
-
-fclose(fid);
-end
+# Example usage
+# write_flow_file(Storage, 'output.flo', 'scaling')

@@ -6,7 +6,7 @@
 clear Storage
 Storage = Storage();
 
-load_images(Storage,'.../demos/SQG_00001_img1.tif','.../demos/SQG_00001_img2.tif');
+load_images(Storage,'../demos/SQG_00001_img1.tif','../demos/SQG_00001_img2.tif');
 preprocessing(Storage);
 
 pass(Storage,[32,32],[16,16],'type_pass','first','restriction','1/2');

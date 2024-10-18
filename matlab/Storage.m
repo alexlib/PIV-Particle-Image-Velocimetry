@@ -1,27 +1,29 @@
-classdef Storage < handle
-    %Storage Класс хранения данных обработки
-    %   Является абстрактным классом (handle), что позволяет передавать
-    %   свойства класса по ссылке
+import numpy as np
 
-    properties
-        src_image_1           % первое исходное изображении
-        src_image_2           % второе исходное изображении
-        image_1               % первое обрабатываемое изображение
-        image_2               % второе обрабатываемое изображение
-        window_size           % размер окна опроса [height,width]
-        overlap               % величина наложения окон опроса
-        centers_map           % матрица центров окон опроса на первом изображении
-        vectors_map           % векторное поле
-        outliers_map          % маска выбросов
-        replaces_map          % маска замещенных векторов
-        correlation_maps      % коллекция хранящая корреляционный карты
-        vectors_map_last_pass % векторное поле последнего прохода
-    end
+class Storage:
+    """
+    Storage Data storage class for processing
+    This is an abstract class (handle), which allows passing
+    class properties by reference.
+    """
 
-    methods
-        function obj = Storage()
-            %Инициализация класса
-            %   Инициализация свойств класса
-        end
-    end
-end
+    def __init__(self):
+        """
+        Initialization of the class
+        Initialization of class properties
+        """
+        self.src_image_1 = None           # first source image
+        self.src_image_2 = None           # second source image
+        self.image_1 = None               # first processed image
+        self.image_2 = None               # second processed image
+        self.window_size = None           # size of the interrogation window [height, width]
+        self.overlap = None               # overlap size of the interrogation windows
+        self.centers_map = None           # matrix of interrogation window centers on the first image
+        self.vectors_map = None           # vector field
+        self.outliers_map = None          # outlier mask
+        self.replaces_map = None          # mask of replaced vectors
+        self.correlation_maps = None      # collection storing correlation maps
+        self.vectors_map_last_pass = None # vector field of the last pass
+
+# Example usage
+# storage = Storage()

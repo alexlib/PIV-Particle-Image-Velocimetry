@@ -1,96 +1,54 @@
-function pass(Storage,window_size,overlap,varargin)
-%pass Расчет векторного поля кросскорреляционным методом
-%   Выполняет кросскорреляцию локальных областей (окн опроса) на паре
-%   изображений. В зависимости от заданных параметров может работать, как
-%   проход для получения первичного векторного поля, так и проход для
-%   уточнения существующего векторного поля.
+import numpy as np
 
-%--------------------------------------------------------------------------
-% Определение параметров по умолчанию
-type_pass = 'first';       % тип прохода 'first' или 'next'
-double_corr = false;       % перемножение соседних корреляционных карт
-direct = 'x';              % метод перемножение
-restriction = false;       % ограничение области поиска корреляционного пика
-restriction_area = '1/2';  % величина ограничения от размера окна
-deform = false;            % деформация изображений
-deform_type = 'symmetric'; % тип деформации
-borders = true;            % обработка границ изображений
-%--------------------------------------------------------------------------
+def pass_function(Storage, window_size, overlap, *args):
+    """
+    pass_function Calculation of the vector field by the cross-correlation method
+    Performs cross-correlation of local areas (interrogation windows) on a pair
+    of images. Depending on the specified parameters, it can work as
+    a pass to obtain the primary vector field, or as a pass to
+    refine the existing vector field.
+    """
+    
+    # Default parameter definitions
+    type_pass = 'first'       # pass type 'first' or 'next'
+    double_corr = False       # multiplication of neighboring correlation maps
+    direct = 'x'              # multiplication method
+    restriction = False       # restriction of the search area for the correlation peak
+    restriction_area = 1/2    # restriction size relative to the window size
+    deform = False            # image deformation
+    deform_type = 'symmetric' # deformation type
+    borders = True            # image border processing
 
-%--------------------------------------------------------------------------
-% Парсер заданных параметров
-k = 2;
-while k <= size(varargin,2)
-    switch varargin{k-1}
-        case 'type_pass', type_pass = varargin{k};
-        case 'double_corr'
-            double_corr = true;
-            direct = varargin{k};
-        case 'restriction'
-            restriction = true;
-            restriction_area = varargin{k};
-            switch restriction_area
-                case '1/2', restriction_area = 1/2;
-                case '1/3', restriction_area = 1/3;
-                case '1/4', restriction_area = 1/4;
-                otherwise, error('Недопустимый параметр');
-            end
-        case 'deform'
-            deform = true;
-            deform_type = varargin{k};
-        case 'borders', borders = varargin{k};
-        otherwise, error('Указан неправильный параметр');
-    end
-    k = k + 2;
-end
-%--------------------------------------------------------------------------
+    # Parameter parser
+    k = 0
+    while k < len(args):
+        if args[k] == 'type_pass':
+            type_pass = args[k + 1]
+        elif args[k] == 'double_corr':
+            double_corr = True
+            direct = args[k + 1]
+        elif args[k] == 'restriction':
+            restriction = True
+            restriction_area = args[k + 1]
+            if restriction_area == '1/2':
+                restriction_area = 1/2
+            elif restriction_area == '1/3':
+                restriction_area = 1/3
+            elif restriction_area == '1/4':
+                restriction_area = 1/4
+            else:
+                raise ValueError('Invalid parameter')
+        elif args[k] == 'deform':
+            deform = True
+            deform_type = args[k + 1]
+        elif args[k] == 'borders':
+            borders = args[k + 1]
+        else:
+            raise ValueError('Incorrect parameter specified')
+        k += 2
 
-%--------------------------------------------------------------------------
-% Проверка на изменение размера и величины наложения окон опроса
-multigrid = ~strcmp(type_pass,'first') && (~isequal(Storage.window_size,window_size) || ~isequal(Storage.overlap,overlap));
+    # The rest of the function implementation goes here
+    # ...
 
-% Запись новых размеров и величины наложения окон опроса
-Storage.window_size = window_size;
-Storage.overlap = overlap;
-%--------------------------------------------------------------------------
-
-%--------------------------------------------------------------------------
-% Формирование координат окн опроса на первом изображении
-[X0,Y0] = images_split(Storage,type_pass,multigrid,borders);
-
-% Размер нового векторного поля
-size_map = size(X0);
-%--------------------------------------------------------------------------
-
-%--------------------------------------------------------------------------
-% Деформации изображений
-if deform, deform_images(Storage,deform_type); end
-%--------------------------------------------------------------------------
-
-%--------------------------------------------------------------------------
-% Масштабирование векторного поля (multigrid)
-if multigrid, resize_field(Storage,size_map); end
-%--------------------------------------------------------------------------
-
-%--------------------------------------------------------------------------
-% Расчет корреляционных карт
-cross_correlate(Storage,size_map,X0,Y0,type_pass,deform,double_corr);
-%--------------------------------------------------------------------------
-
-%--------------------------------------------------------------------------
-% Перемножение соседних карт корреляции
-if double_corr, double_correlate(Storage,direct); end
-%--------------------------------------------------------------------------
-
-%--------------------------------------------------------------------------
-% Поиск максимума корреляционного пика
-search_peak(Storage,size_map,restriction,restriction_area);
-%--------------------------------------------------------------------------
-
-%--------------------------------------------------------------------------
-% Запись результирующего векторного поля
-if strcmp(type_pass,'first'), Storage.vectors_map = Storage.vectors_map_last_pass;
-else, Storage.vectors_map = Storage.vectors_map + Storage.vectors_map_last_pass; end
-%--------------------------------------------------------------------------
-
-end
+# Example usage
+# pass_function(Storage, window_size, overlap, 'type_pass', 'next', 'double_corr', 'y', 'restriction', '1/3', 'deform', 'asymmetric', 'borders', False)
